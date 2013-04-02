@@ -1,17 +1,16 @@
-lolcmis
-=======
+# lolcode
 
-Interpreter for LOLCMIS - LOLCODE + CMIS.
+FIXME: description
 
 ## Installation
 
-Download from https://github.com/pmonks/lolcmis
+Download from http://example.com/FIXME.
 
 ## Usage
 
 FIXME: explanation
 
-    $ java -jar lolcmis-0.1.0-standalone.jar [args]
+    $ java -jar lolcode-0.1.0-standalone.jar [args]
 
 ## Options
 
@@ -31,6 +30,6 @@ FIXME: listing of options this app accepts.
 
 ## License
 
-Copyright © 2013 Peter Monks (pmonks@gmail.com)
+Copyright © 2013 FIXME
 
-Distributed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.
+Distributed under the Eclipse Public License, the same as Clojure.
