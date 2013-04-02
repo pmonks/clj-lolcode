@@ -1,16 +1,16 @@
-# lolcode
+# lolcmis
 
 FIXME: description
 
 ## Installation
 
-Download from http://example.com/FIXME.
+Download from https://github.com/pmonks/lolcmis
 
 ## Usage
 
 FIXME: explanation
 
-    $ java -jar lolcode-0.1.0-standalone.jar [args]
+    $ java -jar lolcmis-0.1.0-standalone.jar [args]
 
 ## Options
 
@@ -30,6 +30,6 @@ FIXME: listing of options this app accepts.
 
 ## License
 
-Copyright © 2013 FIXME
+Copyright © 2012 Peter Monks (pmonks@gmail.com)
 
-Distributed under the Eclipse Public License, the same as Clojure.
+Distributed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.
