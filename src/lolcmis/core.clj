@@ -10,7 +10,8 @@
 (ns lolcmis.core
   (:require [clojure.string :as s]
             [lolcmis.lolcmis :as lolcmis])
-  (:use [clojure.tools.cli :only [cli]])
+  (:use [clojure.tools.cli :only [cli]]
+        [clojure.pprint :only [pprint]])
   (:gen-class))
 
 (defn -main
@@ -29,5 +30,5 @@
         (println (str banner "\n Args\t\tDesc\n ----\t\t----\n filename\tThe filename of the LOLCMIS program to evaluate.\n"))
         (let [source (slurp filename)]
           (if ast
-            (println (lolcmis/parse-lolcmis source))
+            (pprint (lolcmis/parse-lolcmis source))
             (lolcmis/eval-lolcmis source)))))))

@@ -12,7 +12,7 @@
 (ns lolcmis.lolcmis
   (:require [com.lithinos.amotoen.core :as a]))
 
-; Grammar definition and parser
+; Grammar definition and parser function
 (def lolcmis-grammar {
   ; General rules
   :_*                     '(* (| :Whitespace :EndOfLine))
@@ -52,7 +52,7 @@
   ([source rule] (a/pegasus rule lolcmis-grammar (a/wrap-string source))))
 
 
-; Interpreter
+; Interpreter implementation functions, function map for parser, and interpreter function
 (defn- noop [ast] "")
 
 (defn- string-literal-chars
@@ -67,7 +67,7 @@
   [ast]
   (println (:StringLiteral (nth ast 2))))
 
-(def #^{:private true} lolcmis-grammar-fns {
+(def ^:private lolcmis-grammar-fns {
   :StringLiteralChars string-literal-chars
   :StringLiteral      string-literal
   :Visible            visible

@@ -1,35 +1,32 @@
 # lolcmis
 
-FIXME: description
+An interpreter for the LOLCMIS (LOLCODE + CMIS) programming language.  See http://blogs.alfresco.com/wp/developer/2013/04/01/alfresco-announces-hipster-compatible-enterprise-content-management-sdk/.
 
 ## Installation
 
-Download from https://github.com/pmonks/lolcmis
+Checkout the source from https://github.com/pmonks/lolcmis
 
-## Usage
+## Running
 
-FIXME: explanation
+    $ lein run -- <filename>
 
-    $ java -jar lolcmis-0.1.0-standalone.jar [args]
+## Usage:
 
-## Options
+ Switches               Default  Desc
+ --------               -------  ----
+ -a, --no-ast, --ast    false    Print the AST for the program, instead of evaluating it.
+ -h, --no-help, --help  false    Show help
 
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
+ Args       Desc
+ ----       ----
+ filename   The filename of the LOLCMIS program to evaluate.
 
 ### Bugs
 
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+https://github.com/pmonks/lolcmis/issues
 
 ## License
 
-Copyright © 2012 Peter Monks (pmonks@gmail.com)
+Copyright © 2013 Peter Monks (pmonks@gmail.com)
 
 Distributed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.
