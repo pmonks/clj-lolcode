@@ -69,6 +69,16 @@
   (can-parse? "An invalid identifier name" [:Identifier :EndOfInput]) => false
 )
 
+(facts "String literals are parsed correctly."
+  (can-parse? "" [:StringLiteral :EndOfInput]) => false
+  (can-parse? "\"" [:StringLiteral :EndOfInput]) => false
+  (can-parse? "\"\"" [:StringLiteral :EndOfInput]) => true
+  (can-parse? "\"HAI!\"" [:StringLiteral :EndOfInput]) => true
+  (can-parse? "\"HAI LOLCMIS! CAN HAZ STIRNG LITS??\"" [:StringLiteral :EndOfInput]) => true
+  (can-parse? "\"Here is an escaped double quote: \\\"\"" [:StringLiteral :EndOfInput]) => true
+  (can-parse? "\"Here are a pair of escaped double quotes: \\\"HAI!\\\"\"" [:StringLiteral :EndOfInput]) => true
+)
+
 (facts "HAI is parsed correctly."
   (can-parse? "HAI" [:Hai :EndOfInput]) => true
   (can-parse? "HI" [:Hai :EndOfInput]) => false
@@ -89,6 +99,15 @@
   (can-parse? "CAN HAZ CIMS?" [:CanHaz :EndOfInput]) => true
 )
 
+(facts "VISIBLE <string literal> is parsed correctly."
+  (can-parse? "" [:Visible :EndOfInput]) => false
+  (can-parse? "VISIBLE" [:Visible :EndOfInput]) => false
+  (can-parse? "VISIBLE " [:Visible :EndOfInput]) => false
+  (can-parse? "VISIBLE \"" [:Visible :EndOfInput]) => false
+  (can-parse? "VISIBLE \"\"" [:Visible :EndOfInput]) => true
+  (can-parse? "VISIBLE \"OH HAI WRLD!\"" [:Visible :EndOfInput]) => true
+)
+
 (facts "Full programs are parsed correctly."
   (can-parse? "") => false
   (can-parse? "HAI") => false
@@ -106,6 +125,7 @@
   (can-parse? "HAI\nCAN HAZ STDIO?\nCAN HAZ CIMS?\nKTHXBYE") => true
   (can-parse? "HAI CAN HAZ STDIO? CAN HAZ CIMS? KTHXBYE") => true
   (can-parse? "HAI CAN HAZ STDIO? CAN HAZ CIMS? CAN HAZ KITTEHZ? KTHXBYE") => true
+  (can-parse? "HAI\nCAN HAZ STDIO?\nVISIBLE \"HAI WORLD!!1\"\nKTHXBYE") => true
 )
 
 ;(print-ast "HAI\nCAN HAZ STDIO?\nCAN HAZ CIMS?\nKTHXBYE")

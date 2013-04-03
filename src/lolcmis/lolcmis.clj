@@ -10,31 +10,70 @@
 ; Implementation of LOLCMIS (LOLCODE + CMIS) interpreter
 
 (ns lolcmis.lolcmis
-  (:require [com.lithinos.amotoen.core :as amotoen]))
+  (:require [com.lithinos.amotoen.core :as a]))
 
+; Grammar definition and parser
 (def lolcmis-grammar {
   ; General rules
   :_*                     '(* (| :Whitespace :EndOfLine))
   :Whitespace             '(| \space \tab)
   :EndOfLine              '(| \newline \return)
   :EndOfInput             :$
-  :Alpha                  (amotoen/lpegs '| "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
-  :Numeric                (amotoen/lpegs '| "0123456789")
-  :AlphaNumeric           (amotoen/lpegs '| "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+  :Alpha                  (a/lpegs '| "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+  :Numeric                (a/lpegs '| "0123456789")
+  :Numerics               [:Numeric '(* :Numeric)]
+  :AlphaNumeric           (a/lpegs '| "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
   :AlphaNumerics          [:AlphaNumeric '(* :AlphaNumeric)]
   :QuestionMark           \?
   :ExclamationMark        \!
+  :DoubleQuote            \"
+  :EscapedDoubleQuote     [\\ \"]
+  :StringLiteralChar      '(| :EscapedDoubleQuote (% :DoubleQuote))
+  :StringLiteralChars     '(* :StringLiteralChar)
+  :StringLiteral          [:DoubleQuote :StringLiteralChars :DoubleQuote]
+;  :StringLiteral          [:DoubleQuote :DoubleQuote]
+  :NumberLiteral          :Numerics
 
   ; LOLCODE specific rules
   :Identifier             [:Alpha '(* :AlphaNumeric)]
-  :LOLProgram             [:_* :Hai :_* :Imports :_* :KThxBye :_* :EndOfInput]
+  :LOLProgram             [:_* :Hai :_* :Imports :_* :Statements :_* :KThxBye :_* :EndOfInput]
   :Hai                    (vec "HAI")
   :Imports                '(* [:_* :CanHaz])
+  :Statements             '(* [:_* :Statement])
   :KThxBye                (vec "KTHXBYE")
   :CanHaz                 [(vec "CAN HAZ ") :Identifier :QuestionMark]
+  :Statement              '(| :Visible)
+  :Visible                [(vec "VISIBLE ") :_* :StringLiteral]
   })
 
 (defn parse-lolcmis
   "Parses a LOLCMIS program (or fragment, if a rule is provided), returning the AST or nil if parsing fails."
   ([source]      (parse-lolcmis source :LOLProgram))
-  ([source rule] (amotoen/pegasus rule lolcmis-grammar (amotoen/wrap-string source))))
+  ([source rule] (a/pegasus rule lolcmis-grammar (a/wrap-string source))))
+
+
+; Interpreter
+(defn- noop [ast] "")
+
+(defn- string-literal-chars
+  [ast]
+  (apply str (map :StringLiteralChar ast)))
+
+(defn- string-literal
+  [ast]
+  (:StringLiteralChars (second ast)))
+
+(defn- visible
+  [ast]
+  (println (:StringLiteral (nth ast 2))))
+
+(def #^{:private true} lolcmis-grammar-fns {
+  :StringLiteralChars string-literal-chars
+  :StringLiteral      string-literal
+  :Visible            visible
+  })
+
+(defn eval-lolcmis
+  "Evaluates the given LOLCMIS program."
+  [source]
+  (a/post-process :LOLProgram lolcmis-grammar (a/wrap-string source) lolcmis-grammar-fns))

@@ -8,11 +8,26 @@
 ;
 
 (ns lolcmis.core
+  (:require [clojure.string :as s]
+            [lolcmis.lolcmis :as lolcmis])
+  (:use [clojure.tools.cli :only [cli]])
   (:gen-class))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Evaluate a LOLCMIS program from the command line."
   [& args]
   ;; work around dangerous default behaviour in Clojure
   (alter-var-root #'*read-eval* (constantly false))
-  (println "Hello, World!"))
+
+  (let [[options args banner] (cli args
+                                   ["-a" "--ast"  "Print the AST for the program, instead of evaluating it." :default false :flag true]
+                                   ["-h" "--help" "Show help" :default false :flag true])]
+    (let [ast      (:ast  options)
+          help     (:help options)
+          filename (first args)]
+      (if (or help (nil? filename))
+        (println (str banner "\n Args\t\tDesc\n ----\t\t----\n filename\tThe filename of the LOLCMIS program to evaluate.\n"))
+        (let [source (slurp filename)]
+          (if ast
+            (println (lolcmis/parse-lolcmis source))
+            (lolcmis/eval-lolcmis source)))))))
