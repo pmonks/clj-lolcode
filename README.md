@@ -12,14 +12,14 @@ Checkout the source from https://github.com/pmonks/lolcmis
 
 ## Usage:
 
- Switches               Default  Desc
- --------               -------  ----
- -a, --no-ast, --ast    false    Print the AST for the program, instead of evaluating it.
- -h, --no-help, --help  false    Show help
+    Switches               Default  Desc
+    --------               -------  ----
+    -a, --no-ast, --ast    false    Print the AST for the program, instead of evaluating it.
+    -h, --no-help, --help  false    Show help
 
- Args       Desc
- ----       ----
- filename   The filename of the LOLCMIS program to evaluate.
+    Args       Desc
+    ----       ----
+    filename   The filename of the LOLCMIS program to evaluate.
 
 ### Bugs
 
