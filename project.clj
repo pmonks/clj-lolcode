@@ -14,12 +14,14 @@
   :license {:name "Creative Commons Attribution-ShareAlike 3.0 Unported License."
             :url "http://creativecommons.org/licenses/by-sa/3.0/"}
   :dependencies [
-                 [org.clojure/clojure "1.5.1"]
-                 [org.clojure/tools.cli "0.2.2"]
-                 [com.lithinos/amotoen "0.3.0-SNAPSHOT"]
+                  [org.clojure/clojure "1.5.1"]
+                  [org.clojure/tools.cli "0.2.2"]
+                  [com.lithinos/amotoen "0.3.0-SNAPSHOT"]
                 ]
   :profiles {:dev {:dependencies [
-                                  [midje "1.5.1"]
-                                  [lein-midje "3.0.1"]
-                                 ]}}
+                                   [midje "1.5.1"]
+                                 ]
+                   :plugins [
+                              [lein-midje "3.0.1"]
+                            ]}}
   :main lolcmis.core)
