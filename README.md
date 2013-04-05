@@ -21,7 +21,11 @@ Checkout the source from https://github.com/pmonks/lolcmis
     ----       ----
     filename   The filename of the LOLCMIS program to evaluate.
 
-### Bugs
+## Build Status
+
+https://travis-ci.org/pmonks/lolcmis
+
+## Bugs
 
 https://github.com/pmonks/lolcmis/issues
 
