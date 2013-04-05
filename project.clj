@@ -20,5 +20,6 @@
                 ]
   :profiles {:dev {:dependencies [
                                   [midje "1.5.1"]
+                                  [lein-midje "3.0.1"]
                                  ]}}
   :main lolcmis.core)
