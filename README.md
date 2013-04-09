@@ -1,10 +1,10 @@
 # lolcmis
 
-An interpreter for the LOLCMIS (LOLCODE + CMIS) programming language.  See http://blogs.alfresco.com/wp/developer/2013/04/01/alfresco-announces-hipster-compatible-enterprise-content-management-sdk/.
+An interpreter for the LOLCMIS (LOLCODE + CMIS) programming language.  See [this press release](http://blogs.alfresco.com/wp/developer/2013/04/01/alfresco-announces-hipster-compatible-enterprise-content-management-sdk/).
 
 ## Installation
 
-Checkout the source from https://github.com/pmonks/lolcmis
+Checkout the source from [GitHub](https://github.com/pmonks/lolcmis).
 
 ## Running
 
@@ -21,13 +21,13 @@ Checkout the source from https://github.com/pmonks/lolcmis
     ----       ----
     filename   The filename of the LOLCMIS program to evaluate.
 
-## Build Status
 
-https://travis-ci.org/pmonks/lolcmis
+## Developer Information
 
-## Bugs
+[GitHub project](https://github.com/pmonks/lolcmis)
+[Bug Tracker](https://github.com/pmonks/lolcmis/issues)
+[Continuous Integration](https://travis-ci.org/pmonks/lolcmis)
 
-https://github.com/pmonks/lolcmis/issues
 
 ## License
 
