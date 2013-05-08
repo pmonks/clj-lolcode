@@ -74,7 +74,7 @@
 (defn- noop [& args])
 (defn- output-statement
   [& args]
-  (println (nth args 2)))
+  (println (first args)))
 (def ^:private interpreter-functions
   {
     :Literal            identity
