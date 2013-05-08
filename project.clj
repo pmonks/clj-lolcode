@@ -16,7 +16,8 @@
   :dependencies [
                   [org.clojure/clojure "1.5.1"]
                   [org.clojure/tools.cli "0.2.2"]
-                  [com.lithinos/amotoen "0.3.0-SNAPSHOT"]
+                  [org.clojure/tools.trace "0.7.5"]
+                  [instaparse "1.1.0-SNAPSHOT"]
                 ]
   :profiles {:dev {:dependencies [
                                    [midje "1.5.1"]
