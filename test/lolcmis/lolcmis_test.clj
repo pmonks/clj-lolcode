@@ -15,29 +15,49 @@
   (:require [instaparse.core :as insta]))
 
 (defn- print-ast
-  ([source]      (pprint (parse-lolcmis source)))
+  ([source]      (print-ast source :Program))
   ([source rule] (pprint (parse-lolcmis source rule))))
 
 (defn- can-parse?
-  ([source]      (not (insta/failure? (parse-lolcmis source))))
-  ([source rule] (not (insta/failure? (parse-lolcmis source rule)))))
+  ([source]                    (can-parse? source :Program))
+  ([source rule]               (can-parse? source rule false))
+  ([source rule print-failure]
+    (let [ast    (parse-lolcmis source rule)
+          result (not (insta/failure? ast))]
+      (if (and print-failure (not result))
+        (do
+          (pprint "Parse failure:")
+          (pprint (insta/get-failure ast))))
+      result)))
 
 (defn- can-parse-file?
-  ([file]      (can-parse? (slurp file)))
-  ([file rule] (can-parse? (slurp file) rule)))
+  ([file]      (can-parse-file? file :Program))
+  ([file rule] (can-parse-file? file rule false))
+  ([file rule print-failure]
+    (let [source         (slurp file)
+          parsed         (can-parse? source rule print-failure)
+          number-of-asts (number-of-asts source rule)]
 
-(facts "String literals are parsed correctly."
+      (if (and print-failure (> number-of-asts 1))
+        (pprint "Multiple ASTs"))
+      (and parsed (= number-of-asts 1))
+    )))
+
+(facts "String literals can be parsed."
   (can-parse? "" :StringLiteral) => false
   (can-parse? "\"" :StringLiteral) => false
   (can-parse? "\"\"" :StringLiteral) => true
+  (can-parse? "\"\\\"\"" :StringLiteral) => true
   (can-parse? "HAI!" :StringLiteral) => false
   (can-parse? "\"HAI!\"" :StringLiteral) => true
   (can-parse? "\"HAI LOLCMIS! CAN HAZ STIRNG LITS??\"" :StringLiteral) => true
   (can-parse? "\"Here is an escaped double quote: \\\"\"" :StringLiteral) => true
   (can-parse? "\"Here are a pair of escaped double quotes: \\\"HAI!\\\"\"" :StringLiteral) => true
+  (can-parse? "\"String literal containing \na newline" :StringLiteral) => false
+  (can-parse? "\"String literal containing \\nan escaped newline" :StringLiteral) => true
 )
 
-(facts "Integer literals are parsed correctly."
+(facts "Integer literals can be parsed."
   (can-parse? "" :IntegerLiteral) => false
   (can-parse? "\"" :IntegerLiteral) => false
   (can-parse? " " :IntegerLiteral) => false
@@ -50,7 +70,7 @@
   (can-parse? "12345.67890" :IntegerLiteral) => false
 )
 
-(facts "Float literals are parsed correctly."
+(facts "Float literals can be parsed."
   (can-parse? "" :FloatLiteral) => false
   (can-parse? "\"" :FloatLiteral) => false
   (can-parse? " " :FloatLiteral) => false
@@ -65,7 +85,7 @@
   (can-parse? "12345.67890" :FloatLiteral) => true
 )
 
-(facts "Boolean literals are parsed correctly."
+(facts "Boolean literals can be parsed."
   (can-parse? "" :BooleanLiteral) => false
   (can-parse? " " :BooleanLiteral) => false
   (can-parse? "1" :BooleanLiteral) => false
@@ -80,7 +100,7 @@
   (can-parse? "LOSE " :BooleanLiteral) => false
 )
 
-(facts "Void literals are parsed correctly."
+(facts "Void literals can be parsed."
   (can-parse? "" :VoidLiteral) => false
   (can-parse? " " :VoidLiteral) => false
   (can-parse? "1" :VoidLiteral) => false
@@ -91,10 +111,11 @@
   (can-parse? " NOOB " :VoidLiteral) => false
 )
 
-(facts "Identifiers are parsed correctly."
+(facts "Identifiers can be parsed."
   (can-parse? "" :Identifier) => false
   (can-parse? " " :Identifier) => false
   (can-parse? "1" :Identifier) => false
+  (can-parse? "\"" :Identifier) => false
   (can-parse? "_" :Identifier) => true
   (can-parse? "a" :Identifier) => true
   (can-parse? "abcd" :Identifier) => true
@@ -105,20 +126,23 @@
   (can-parse? "ABCD123" :Identifier) => true
   (can-parse? "_ABCD" :Identifier) => true
   (can-parse? "123ABCD" :Identifier) => false
+  (can-parse? "ABCD\"" :Identifier) => false
+  (can-parse? "ABCD+_@#$-9" :Identifier) => false
 )
 
-(facts "Comments are parsed correctly."
+(facts "Comments can be parsed."
   (can-parse? "" :Comment) => false
   (can-parse? " " :Comment) => false
   (can-parse? "BTW" :Comment) => false
-  (can-parse? "BTW" :Comment) => false
+  (can-parse? "BTW\n" :Comment) => false
   (can-parse? "BTWabcd" :Comment) => false
   (can-parse? "BTWabcd\n" :Comment) => false
+  (can-parse? "BTW \n" :Comment) => true
   (can-parse? "BTW abcd\n" :Comment) => true
   (can-parse? "BTW abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097\r" :Comment) => true
 )
 
-(facts "Import statements are parsed correctly."
+(facts "Import statements can be parsed."
   (can-parse? "" :ImportStatement) => false
   (can-parse? " " :ImportStatement) => false
   (can-parse? "CAN HAZ" :ImportStatement) => false
@@ -129,7 +153,7 @@
   (can-parse? "CAN HAZ CIMS?\r" :ImportStatement) => true
 )
 
-(facts "Output statements are parsed correctly."
+(facts "Output statements can be parsed."
   (can-parse? "" :OutputStatement) => false
   (can-parse? " " :OutputStatement) => false
   (can-parse? "VISIBLE" :OutputStatement) => false
@@ -145,7 +169,7 @@
   (can-parse? "VISIBLE ABCD\n" :OutputStatement) => true
 )
 
-(facts "Input statements are parsed correctly."
+(facts "Input statements can be parsed."
   (can-parse? "" :InputStatement) => false
   (can-parse? " " :InputStatement) => false
   (can-parse? "GIMMEH" :InputStatement) => false
@@ -155,17 +179,34 @@
   (can-parse? "GIMMEH \"HAI WORLD!\"\r" :InputStatement) => false
   (can-parse? "GIMMEH 1234\r\n" :InputStatement) => false
   (can-parse? "GIMMEH 1234.5678\n" :InputStatement) => false
-  (can-parse? "GIMMEH WIN\n" :InputStatement) => false
-  (can-parse? "GIMMEH LOSE\n" :InputStatement) => false
-  (can-parse? "GIMMEH NOOB\n" :InputStatement) => false
+  (can-parse? "GIMMEH WIN\n" :InputStatement) => false     ; Reserved word
+  (can-parse? "GIMMEH LOSE\n" :InputStatement) => false    ; Reserved word
+  (can-parse? "GIMMEH NOOB\n" :InputStatement) => false    ; Reserved word
   (can-parse? "GIMMEH ABCD\n" :InputStatement) => true
+  (can-parse? "GIMMEH ABCD       \r\n" :InputStatement) => true
   (can-parse? "GIMMEH MY_VAR\n" :InputStatement) => true
   (can-parse? "GIMMEH _MY_VAR\n" :InputStatement) => true
 )
 
+(facts "Variable declarations can be parsed."
+  (can-parse? "" :VariableDeclaration) => false
+  (can-parse? "I HAS A" :VariableDeclaration) => false
+  (can-parse? "I HAS A " :VariableDeclaration) => false
+  (can-parse? "I HAS A ABCD\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A NOOB\n" :VariableDeclaration) => false
+  (can-parse? "I HAS A ABCD       \r" :VariableDeclaration) => true
+  (can-parse? "I HAS A NOOB\n" :VariableDeclaration) => false    ; Reserved word
+  (can-parse? "I HAS A ABCD ITZ \"HAI WORLD!\"\r\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A PIE ITZ 3\r\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A PIE ITZ 3\r\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A ABCD ITZ A YARN\r\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A ABCD ITZ EFGH\r\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A NOOB\r\n" :VariableDeclaration) => true
+)
+
 (def ^:private valid-programs-directory (file "test/valid"))
 (def ^:private valid-test-programs (filter #(.endsWith (.getName %) ".LOL") (file-seq valid-programs-directory)))
-(doall (map #(do (println "Parsing" (.getPath %) "...") (fact (can-parse-file? %) => true)) valid-test-programs))
+(doall (map #(do (println "Parsing" (.getPath %) "...") (fact (can-parse-file? % :Program true) => true)) valid-test-programs))
 
 (def ^:private invalid-programs-directory (file "test/invalid"))
 (def ^:private invalid-test-programs (filter #(.endsWith (.getName %) ".LOL") (file-seq invalid-programs-directory)))

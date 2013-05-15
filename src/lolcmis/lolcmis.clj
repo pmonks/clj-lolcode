@@ -10,7 +10,8 @@
 ; Implementation of LOLCMIS (LOLCODE + CMIS) interpreter
 
 (ns lolcmis.lolcmis
-  (:require [instaparse.core :as insta]))
+  (:require [instaparse.core :as insta]
+            [clojure.tools.logging :as log]))
 
 (def ^:private lolcmis-grammar "
   (* Program structure *)
@@ -19,73 +20,153 @@
                           <'HAI'> <Whitespace> FloatLiteral <NewLine>
   StatementList         = Statement*
 
-  (* Non terminals *)
+  (* Statements *)
   Statement             = <SkipLine> |
                           ImportStatement |
                           OutputStatement |
                           InputStatement |
-                          VariableDeclaration
+                          VariableDeclaration |
+                          Assignment
   SkipLine              = Comment |
                           NewLine
-  Comment               = 'BTW' Whitespace AnyText NewLine
-  ImportStatement       = <'CAN'> <Whitespace> <'HAZ'> <Whitespace> Identifier <'?'> <NewLine>
+  Comment               = 'BTW' Whitespace AnyText? NewLine
+  ImportStatement       = <'CAN HAZ'> <Whitespace> Identifier <'?'> <NewLine>
   OutputStatement       = <'VISIBLE'> <Whitespace> (Identifier | Literal) <NewLine>
   InputStatement        = <'GIMMEH'> <Whitespace> Identifier <NewLine>
-  VariableDeclaration   = <'I'> <Whitespace> <'HAS'> <Whitespace> <'A'> <Whitespace> (Identifier |
-                                                                                      Identifier <Whitespace> <'ITZ'> <Whitespace> Expression |
-                                                                                      Identifier <Whitespace> <'ITZ'> <Whitespace> <'A'> <Whitespace> Type)
-                          <NewLine>
+  VariableDeclaration   = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ'> <Whitespace> Expression | <'ITZ A'> <Whitespace> Type))? <NewLine>
+  Assignment            = Identifier <Whitespace> <'R'> <Whitespace> Expression
+
+  (* Non-statements *)
   Expression            = Identifier |
                           Literal |
                           CastExpression
-  CastExpression        = Identifier <'IS'> <Whitespace> <'NOW'> <Whitespace> <'A'> <Whitespace> Type
+  CastExpression        = Identifier <Whitespace> <'IS NOW A'> <Whitespace> Type
   Literal               = StringLiteral |
                           IntegerLiteral |
                           FloatLiteral |
                           BooleanLiteral |
                           VoidLiteral
+  StringLiteral         = <DoubleQuote> (EscapedDoubleQuote | StringCharacter)* <DoubleQuote>
+  BooleanLiteral        = TrueLiteral | FalseLiteral
+
+  (* Almost-terminals *)
+  NewLine               = OptionalWhitespace ('\\n' | '\\r' | '\\r\\n' | '\\u0085' | '\\u2028' | '\\u2029' | '\\u000B')
+  Identifier            = !ReservedWord #'[_\\p{Alpha}]\\w*'
 
   (* Terminals *)
   AnyText               = #'.*'
   Whitespace            = #'[ \\t]+'
   OptionalWhitespace    = #'[ \\t]*'
-  NewLine               = OptionalWhitespace ('\\n' | '\\r' | '\\r\\n' | '\\u0085' | '\\u2028' | '\\u2029' | '\\u000B')
-  Identifier            = !ReservedWord #'[_\\p{Alpha}]\\w*'
-  StringLiteral         = #'\".*\"'
   IntegerLiteral        = #'\\d+'
   FloatLiteral          = #'\\d+\\.\\d+'
-  BooleanLiteral        = TrueLiteral | FalseLiteral
   TrueLiteral           = 'WIN'
   FalseLiteral          = 'LOSE'
   VoidLiteral           = 'NOOB'
   Type                  = 'YARN' | 'NUMBR' | 'NUMBAR' | 'TROOF' | 'NOOB'
+  DoubleQuote           = '\"'
+  EscapedDoubleQuote    = '\\\"'
+  StringCharacter       = #'[^\"^\n^\r]'
 
   (* Reserved words *)
-  ReservedWord          = BooleanLiteral | VoidLiteral | Type | 'HAI' | 'KTHXBYE' | 'BTW' | 'CAN' | 'HAZ' | 'VISIBLE' | 'GIMMEH'
+  ReservedWord          = BooleanLiteral | VoidLiteral | Type
   ")
 (def ^:private lolcmis-parser (insta/parser lolcmis-grammar))
 
 (defn parse-lolcmis
-  "Parses a LOLCMIS program (or fragment, if a rule is provided)."
+  "Parses a LOLCMIS program (or fragment, if a rule is provided).  May return multiple parse trees."
   ([source]      (parse-lolcmis source :Program))
-  ([source rule] (lolcmis-parser source :start rule)))
+  ([source rule] (insta/parses lolcmis-parser source :start rule)))
+
+(defn number-of-asts
+  "Returns the number of parse trees for the given program."
+  ([source]      (number-of-asts source :Program))
+  ([source rule] (count (insta/parses lolcmis-parser source :start rule))))
 
 ; Interpreter functions
+(defn- get-var
+  [var-name]
+  (let [variable (find-var (symbol "lolprogram" var-name))]
+    (if (nil? variable)
+      (throw (Exception. (str "AINT GOT NO " var-name)))
+      (var-get variable))))
+
+(defn- set-var
+  [var-name value]
+  (do
+    (log/debug (str "Setting lolprogram/" var-name " to " value))  ; Note: won't print anything for nil
+    (intern 'lolprogram (symbol var-name) value)))
+
+(defn- initialise
+  [& args]
+  (create-ns 'lolprogram)        ; Create a dedicated namespace for the program itself
+  (set-var "IT" nil)                 ; Define and initialise special variable "IT"
+  (log/debug "LOL interpreter initialised"))
+
 (defn- noop [& args])
+(defn- print-ast [& args] (println args))
+
 (defn- output-statement
   [& args]
-  (println (first args)))
+  (let [token-type (first (first args))]
+    (case token-type
+      :Literal
+        (print (second (first args)))
+      :Identifier
+        (print (get-var (second (first args)))))
+    (flush)))
+
+(defn- input-statement
+  [& args]
+  (set-var (second (first args)) (read-line)))
+
+(defn- variable-declaration
+  [& args]
+  (let [var-name (second (first args))]
+    (if (= (count args) 1)
+      (set-var var-name)   ; No initialisation provided
+      (let [declaration-type (first (second args))]
+        (case declaration-type
+          :Type
+            (let [declaration-data-type (second (second args))]
+              (case declaration-data-type
+                "YARN"   (set-var var-name "")
+                "NUMBR"  (set-var var-name 0)
+                "NUMBAR" (set-var var-name 0.0)
+                "TROOF"  (set-var var-name false)
+                "NOOB"   (set-var var-name nil)))
+          :Expression
+ ;           (if (vector? (second (second args)))
+              (let [expression-type (first (second (second args)))]
+                (case expression-type
+                  :Literal        (set-var var-name (second (second (second args))))
+                  :Identifier     (set-var var-name (get-var (second (second (second args)))))
+                  :CastExpression (set-var var-name "####TODO!!!!")   ;####TODO: implement casts
+              )
+            )
+        )
+      )
+    )
+  )
+)
+
+; To read a variable dynamically:
+
 (def ^:private interpreter-functions
   {
-    :Literal            identity
-    :StringLiteral      str
-    :IntegerLiteral     int
-    :FloatLiteral       float
-    :TrueLiteral        true
-    :FalseLiteral       false
-    :BooleanLiteral     identity
-    :VoidLiteral        nil
-    :OutputStatement    output-statement
+    :Header              initialise
+    :StringLiteral       str
+    :StringCharacter     str
+    :EscapedDoubleQuote  str
+    :IntegerLiteral      int
+    :FloatLiteral        float
+    :TrueLiteral         true
+    :FalseLiteral        false
+    :BooleanLiteral      identity
+    :VoidLiteral         nil
+    :OutputStatement     output-statement
+    :InputStatement      input-statement
+;    :VariableDeclaration variable-declaration
+    :VariableDeclaration print-ast
   })
 
 (defn eval-lolcmis

@@ -17,10 +17,13 @@
                   [org.clojure/clojure "1.5.1"]
                   [org.clojure/tools.cli "0.2.2"]
                   [org.clojure/tools.trace "0.7.5"]
+                  [org.clojure/tools.logging "0.2.6"]
                   [instaparse "1.1.0-SNAPSHOT"]
+                  [ch.qos.logback/logback-classic "1.0.13"]
                 ]
   :profiles {:dev {:dependencies [
                                    [midje "1.5.1"]
+                                   [clj-ns-browser "1.3.1"]
                                  ]
                    :plugins [
                               [lein-midje "3.0.1"]
