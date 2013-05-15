@@ -13,6 +13,7 @@
   (:require [instaparse.core :as insta]
             [clojure.tools.logging :as log]))
 
+; LOLCMIS grammar, partially based on the LOLCODE grammars at http://forum.lolcode.com/viewtopic.php?id=318
 (def ^:private lolcmis-grammar "
   (* Program structure *)
   Program               = <SkipLine*> Header StatementList <'KTHXBYE'> <SkipLine*>
@@ -70,6 +71,9 @@
   (* Reserved words *)
   ReservedWord          = BooleanLiteral | VoidLiteral | Type
   ")
+
+
+; LOLCMIS parser
 (def ^:private lolcmis-parser (insta/parser lolcmis-grammar))
 
 (defn parse-lolcmis
@@ -78,12 +82,14 @@
   ([source rule] (insta/parses lolcmis-parser source :start rule)))
 
 (defn number-of-asts
-  "Returns the number of parse trees for the given program."
+  "Returns the total number of parse trees for the given program (or fragment, if a rule is provided)."
   ([source]      (number-of-asts source :Program))
   ([source rule] (count (insta/parses lolcmis-parser source :start rule))))
 
-; Interpreter functions
+
+; LOLCMIS interpreter
 (defn- get-var
+  "Gets the value of a LOLCMIS variable."
   [var-name]
   (let [variable (find-var (symbol "lolprogram" var-name))]
     (if (nil? variable)
@@ -91,21 +97,26 @@
       (var-get variable))))
 
 (defn- set-var
+  "Sets the value of a LOLCMIS variable to the specified value."
   [var-name value]
   (do
     (log/debug (str "Setting lolprogram/" var-name " to " value))  ; Note: won't print anything for nil
     (intern 'lolprogram (symbol var-name) value)))
 
 (defn- initialise
+  "Initialises the LOLCMIS interpreter."
   [& args]
   (create-ns 'lolprogram)        ; Create a dedicated namespace for the program itself
-  (set-var "IT" nil)                 ; Define and initialise special variable "IT"
+  (set-var "IT" nil)             ; Define and initialise special variable "IT"
   (log/debug "LOL interpreter initialised"))
 
-(defn- noop [& args])
-(defn- print-ast [& args] (println args))
+(defn- print-ast
+  "Prints the AST - useful as a placeholder in the interpreter-functions map to see what, precisely, will be passed to the function."
+  [& args]
+  (println args))
 
 (defn- output-statement
+  "OutputStatement implementation."
   [& args]
   (let [token-type (first (first args))]
     (case token-type
@@ -116,10 +127,12 @@
     (flush)))
 
 (defn- input-statement
+  "InputStatement implementation."
   [& args]
   (set-var (second (first args)) (read-line)))
 
 (defn- variable-declaration
+  "VariableDeclaration implementation."
   [& args]
   (let [var-name (second (first args))]
     (if (= (count args) 1)
@@ -149,9 +162,8 @@
   )
 )
 
-; To read a variable dynamically:
-
-(def ^:private interpreter-functions
+; The map of tokens to functions for the interpreter.
+(def ^:private interpreter-function-map
   {
     :Header              initialise
     :StringLiteral       str
@@ -170,9 +182,11 @@
   })
 
 (defn eval-lolcmis
-  "Evaluates a LOLCMIS program (or fragment, if a rule is provided)."
+  "Evaluates (interprets) a LOLCMIS program (or fragment, if a rule is provided)."
   ([source]      (eval-lolcmis source :Program))
-  ([source rule] (do (insta/transform interpreter-functions (lolcmis-parser source :start rule)) nil)))
+  ([source rule] (do (insta/transform interpreter-function-map (lolcmis-parser source :start rule)) nil)))
+
+
 
 
 
