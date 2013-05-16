@@ -51,10 +51,12 @@
   (can-parse? "HAI!" :StringLiteral) => false
   (can-parse? "\"HAI!\"" :StringLiteral) => true
   (can-parse? "\"HAI LOLCMIS! CAN HAZ STIRNG LITS??\"" :StringLiteral) => true
-  (can-parse? "\"Here is an escaped double quote: \\\"\"" :StringLiteral) => true
+  (can-parse? "\"Here is an escaped double quote: \\\" followed by some more text.\"" :StringLiteral) => true
   (can-parse? "\"Here are a pair of escaped double quotes: \\\"HAI!\\\"\"" :StringLiteral) => true
-  (can-parse? "\"String literal containing \na newline" :StringLiteral) => false
-  (can-parse? "\"String literal containing \\nan escaped newline" :StringLiteral) => true
+  (can-parse? "\"String literal containing \\an escaped backslash\"" :StringLiteral) => true
+  (can-parse? "\"String literal containing \nan escaped newline\"" :StringLiteral) => true
+  (can-parse? "\"String literal containing
+an explicit newline\"" :StringLiteral) => true
 )
 
 (facts "Integer literals can be parsed."
@@ -130,16 +132,33 @@
   (can-parse? "ABCD+_@#$-9" :Identifier) => false
 )
 
-(facts "Comments can be parsed."
-  (can-parse? "" :Comment) => false
-  (can-parse? " " :Comment) => false
-  (can-parse? "BTW" :Comment) => false
-  (can-parse? "BTW\n" :Comment) => false
-  (can-parse? "BTWabcd" :Comment) => false
-  (can-parse? "BTWabcd\n" :Comment) => false
-  (can-parse? "BTW \n" :Comment) => true
-  (can-parse? "BTW abcd\n" :Comment) => true
-  (can-parse? "BTW abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097\r" :Comment) => true
+(facts "Single line comments can be parsed."
+  (can-parse? "" :SingleLineComment) => false
+  (can-parse? " " :SingleLineComment) => false
+  (can-parse? "BTW" :SingleLineComment) => false
+  (can-parse? "BTW\n" :SingleLineComment) => true
+  (can-parse? "BTWabcd" :SingleLineComment) => false
+  (can-parse? "BTWabcd\n" :SingleLineComment) => false
+  (can-parse? "BTW \n" :SingleLineComment) => true
+  (can-parse? "BTW abcd\n" :SingleLineComment) => true
+  (can-parse? "BTW abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097\r" :SingleLineComment) => true
+  (can-parse? "BTW VISIBLE GIMMEH I HAS A ITZ YARN NUMBR NUMBAR TROOF NOOB WIN LOSE\n" :SingleLineComment) => true
+)
+
+(facts "Multi line comments can be parsed."
+  (can-parse? "" :MultiLineComment) => false
+  (can-parse? " " :MultiLineComment) => false
+  (can-parse? "OBTW" :MultiLineComment) => false
+  (can-parse? "OBTW\n" :MultiLineComment) => false
+  (can-parse? "OBTW\nTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW \nTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW
+TLDR" :MultiLineComment) => true
+  (can-parse? "OBTW Here is a multi-line comment\nTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW\nHere is a multi-line comment\rTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW\n Here \nis \na\n multi-line\n comment\n\r\n\r\r\nTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW\n abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097\rTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW\nVISIBLE\rGIMMEH\r\nI HAS A\nITZ\nYARN\nNUMBR\nNUMBAR\nTROOF\nNOOB\nWIN\nLOSE\nTLDR" :MultiLineComment) => true
 )
 
 (facts "Import statements can be parsed."

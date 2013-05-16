@@ -28,7 +28,9 @@
                           Assignment
   SkipLine              = Comment |
                           NewLine
-  Comment               = 'BTW' Whitespace AnyText? NewLine
+  Comment               = SingleLineComment | MultiLineComment
+  SingleLineComment     = 'BTW' (Whitespace AnyText)? NewLine
+  MultiLineComment      = 'OBTW' ((Whitespace | NewLine) AnyText?)+ 'TLDR'
   ImportStatement       = <'CAN HAZ'> <Whitespace> Identifier <'?'> <NewLine>
   OutputStatement       = <'VISIBLE'> <Whitespace> (Identifier | Literal) <NewLine>
   InputStatement        = <'GIMMEH'> <Whitespace> Identifier <NewLine>
@@ -63,8 +65,8 @@
   VoidLiteral           = 'NOOB'
   Type                  = 'YARN' | 'NUMBR' | 'NUMBAR' | 'TROOF' | 'NOOB'
   DoubleQuote           = '\"'
-  EscapedDoubleQuote    = '\\\"'
-  StringCharacter       = #'[^\"^\n^\r]'
+  EscapedDoubleQuote    = '\\\\\"'
+  StringCharacter       = #'[^\"]'
 
   (* Reserved words *)
   ReservedWord          = BooleanLiteral | VoidLiteral | Type
