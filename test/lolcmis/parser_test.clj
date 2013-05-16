@@ -7,27 +7,27 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-(ns lolcmis.lolcmis-test
+(ns lolcmis.parser-test
   (:use midje.sweet
         clojure.pprint
-        lolcmis.lolcmis
+        lolcmis.parser
         clojure.java.io)
   (:require [instaparse.core :as insta]))
 
 (defn- print-ast
   ([source]      (print-ast source :Program))
-  ([source rule] (pprint (parse-lolcmis source rule))))
+  ([source rule] (pprint (parses source rule))))
 
 (defn- can-parse?
   ([source]                    (can-parse? source :Program))
   ([source rule]               (can-parse? source rule false))
   ([source rule print-failure]
-    (let [ast    (parse-lolcmis source rule)
-          result (not (insta/failure? ast))]
+    (let [asts   (parses source rule)
+          result (not (insta/failure? asts))]
       (if (and print-failure (not result))
         (do
           (pprint "Parse failure:")
-          (pprint (insta/get-failure ast))))
+          (pprint (insta/get-failure asts))))
       result)))
 
 (defn- can-parse-file?

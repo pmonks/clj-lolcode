@@ -7,14 +7,12 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-; Implementation of LOLCMIS (LOLCODE + CMIS) interpreter
+; LOLCMIS (LOLCODE + CMIS) grammar
 
-(ns lolcmis.lolcmis
-  (:require [instaparse.core :as insta]
-            [clojure.tools.logging :as log]))
+(ns lolcmis.grammar)
 
 ; LOLCMIS grammar, partially based on the LOLCODE grammars at http://forum.lolcode.com/viewtopic.php?id=318
-(def ^:private lolcmis-grammar "
+(def lolcmis-grammar "
   (* Program structure *)
   Program               = <SkipLine*> Header StatementList <'KTHXBYE'> <SkipLine*>
   Header                = <'HAI'> <NewLine> |
@@ -71,140 +69,6 @@
   (* Reserved words *)
   ReservedWord          = BooleanLiteral | VoidLiteral | Type
   ")
-
-
-; LOLCMIS parser
-(def ^:private lolcmis-parser (insta/parser lolcmis-grammar))
-
-(defn parse-lolcmis
-  "Parses a LOLCMIS program (or fragment, if a rule is provided).  May return multiple parse trees."
-  ([source]      (parse-lolcmis source :Program))
-  ([source rule] (insta/parses lolcmis-parser source :start rule)))
-
-(defn number-of-asts
-  "Returns the total number of parse trees for the given program (or fragment, if a rule is provided)."
-  ([source]      (number-of-asts source :Program))
-  ([source rule] (count (insta/parses lolcmis-parser source :start rule))))
-
-
-; LOLCMIS interpreter
-(defn- get-var
-  "Gets the value of a LOLCMIS variable."
-  [var-name]
-  (let [variable (find-var (symbol "lolprogram" var-name))]
-    (if (nil? variable)
-      (throw (Exception. (str "AINT GOT NO " var-name)))
-      (var-get variable))))
-
-(defn- set-var
-  "Sets the value of a LOLCMIS variable to the specified value."
-  [var-name value]
-  (do
-    (log/debug (str "Setting lolprogram/" var-name " to " (if (nil? value) "<nil>" value)))
-    (intern 'lolprogram (symbol var-name) value)))
-
-(defn- initialise
-  "Initialises the LOLCMIS interpreter."
-  [& args]
-  (create-ns 'lolprogram)        ; Create a dedicated namespace for the program itself
-  (set-var "IT" nil)             ; Define and initialise special variable "IT"
-  (log/debug "LOL interpreter initialised"))
-
-(defn- print-ast
-  "Prints the AST - useful as a placeholder in the interpreter-functions map to see what, precisely, will be passed to the function."
-  [& args]
-  (println args))
-
-(defn- true-literal
-  "Returns true, regardless of the arguments."
-  [& args]
-  true)
-
-(defn- false-literal
-  "Returns false, regardless of the arguments."
-  [& args]
-  false)
-
-(defn- void-literal
-  "Returns nil, regardless of the arguments."
-  [& args]
-  nil)
-
-(defn- output-statement
-  "OutputStatement implementation."
-  [& args]
-  (let [token-type (first (first args))]
-    (case token-type
-      :Literal
-        (print (second (first args)))
-      :Identifier
-        (print (get-var (second (first args)))))
-    (flush)))
-
-(defn- input-statement
-  "InputStatement implementation."
-  [& args]
-  (set-var (second (first args)) (read-line)))
-
-(defn- variable-declaration
-  "VariableDeclaration implementation."
-  [& args]
-  (let [var-name (second (first args))]
-    (if (= (count args) 1)
-      (set-var var-name nil)   ; Variable was declared but not initialised
-      (let [variable-declaration-type (first (second args))]
-        (case variable-declaration-type
-          :Type
-            (let [data-type (second (second args))]
-              (case data-type
-                "YARN"   (set-var var-name "")
-                "NUMBR"  (set-var var-name 0)
-                "NUMBAR" (set-var var-name 0.0)
-                "TROOF"  (set-var var-name false)
-                "NOOB"   (set-var var-name nil)))
-          :Literal
-            (set-var var-name (second (second args)))
-          :Identifier
-            (set-var var-name (get-var (second (second args))))
-          :CastExpression
-            (let [value     (second (second (second args)))
-                  cast-type (second (nth (second args) 2))]
-              (case cast-type
-                "YARN"   (set-var var-name (str                  value))
-                "NUMBR"  (set-var var-name (Long/parseLong       value))
-                "NUMBAR" (set-var var-name (Double/parseDouble   value))   ; ####TODO: consider using BigDecimal...
-                "TROOF"  (set-var var-name (Boolean/parseBoolean value))
-                "NOOB"   (set-var var-name value))))))))
-
-; The map of tokens to functions for the interpreter.
-(def ^:private interpreter-function-map
-  {
-    :Header              initialise
-    :StringLiteral       str
-    :StringCharacter     str
-    :EscapedDoubleQuote  str
-    :IntegerLiteral      #(Long/parseLong %)
-    :FloatLiteral        #(Double/parseDouble %)   ; ####TODO: consider using BigDecimal...
-    :TrueLiteral         true-literal
-    :FalseLiteral        false-literal
-    :BooleanLiteral      identity
-    :VoidLiteral         void-literal
-    :OutputStatement     output-statement
-    :InputStatement      input-statement
-    :VariableDeclaration variable-declaration
-;    :VariableDeclaration print-ast
-    :Expression          identity
-  })
-
-(defn eval-lolcmis
-  "Evaluates (interprets) a LOLCMIS program (or fragment, if a rule is provided)."
-  ([source]      (eval-lolcmis source :Program))
-  ([source rule] (do (insta/transform interpreter-function-map (lolcmis-parser source :start rule)) nil)))
-
-
-
-
-
 
 
 
