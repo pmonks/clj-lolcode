@@ -1,11 +1,24 @@
 HAI
 CAN HAZ STDIO?
+
 BTW Uninitialised declaration
 I HAS A VARIABLE
+
 BTW Typed declaration
 I HAS A WAT ITZ A TROOF
-BTW Expression declarations
+
+BTW Literal declarations
 I HAS A KITTEH ITZ "CUTE"
+I HAS A NUMBAH ITZ 1
+I HAS A MONEYZ ITZ 3.14
+I HAS A BUTTON ITZ WIN
+I HAS A RESULT ITZ LOSE
+I HAS A NUFFINK ITZ NOOB
+
+BTW Assignment declaration
 I HAS A SECOND_KITTEH ITZ KITTEH
+
+BTW Assignment with cast declaration
 I HAS A DOGGEH ITZ KITTEH IS NOW A YARN
+
 KTHXBYE

@@ -100,7 +100,7 @@
   "Sets the value of a LOLCMIS variable to the specified value."
   [var-name value]
   (do
-    (log/debug (str "Setting lolprogram/" var-name " to " value))  ; Note: won't print anything for nil
+    (log/debug (str "Setting lolprogram/" var-name " to " (if (nil? value) "<nil>" value)))
     (intern 'lolprogram (symbol var-name) value)))
 
 (defn- initialise
@@ -114,6 +114,21 @@
   "Prints the AST - useful as a placeholder in the interpreter-functions map to see what, precisely, will be passed to the function."
   [& args]
   (println args))
+
+(defn- true-literal
+  "Returns true, regardless of the arguments."
+  [& args]
+  true)
+
+(defn- false-literal
+  "Returns false, regardless of the arguments."
+  [& args]
+  false)
+
+(defn- void-literal
+  "Returns nil, regardless of the arguments."
+  [& args]
+  nil)
 
 (defn- output-statement
   "OutputStatement implementation."
@@ -136,31 +151,30 @@
   [& args]
   (let [var-name (second (first args))]
     (if (= (count args) 1)
-      (set-var var-name)   ; No initialisation provided
-      (let [declaration-type (first (second args))]
-        (case declaration-type
+      (set-var var-name nil)   ; Variable was declared but not initialised
+      (let [variable-declaration-type (first (second args))]
+        (case variable-declaration-type
           :Type
-            (let [declaration-data-type (second (second args))]
-              (case declaration-data-type
+            (let [data-type (second (second args))]
+              (case data-type
                 "YARN"   (set-var var-name "")
                 "NUMBR"  (set-var var-name 0)
                 "NUMBAR" (set-var var-name 0.0)
                 "TROOF"  (set-var var-name false)
                 "NOOB"   (set-var var-name nil)))
-          :Expression
- ;           (if (vector? (second (second args)))
-              (let [expression-type (first (second (second args)))]
-                (case expression-type
-                  :Literal        (set-var var-name (second (second (second args))))
-                  :Identifier     (set-var var-name (get-var (second (second (second args)))))
-                  :CastExpression (set-var var-name "####TODO!!!!")   ;####TODO: implement casts
-              )
-            )
-        )
-      )
-    )
-  )
-)
+          :Literal
+            (set-var var-name (second (second args)))
+          :Identifier
+            (set-var var-name (get-var (second (second args))))
+          :CastExpression
+            (let [value     (second (second (second args)))
+                  cast-type (second (nth (second args) 2))]
+              (case cast-type
+                "YARN"   (set-var var-name (str                  value))
+                "NUMBR"  (set-var var-name (Long/parseLong       value))
+                "NUMBAR" (set-var var-name (Double/parseDouble   value))   ; ####TODO: consider using BigDecimal...
+                "TROOF"  (set-var var-name (Boolean/parseBoolean value))
+                "NOOB"   (set-var var-name value))))))))
 
 ; The map of tokens to functions for the interpreter.
 (def ^:private interpreter-function-map
@@ -169,16 +183,17 @@
     :StringLiteral       str
     :StringCharacter     str
     :EscapedDoubleQuote  str
-    :IntegerLiteral      int
-    :FloatLiteral        float
-    :TrueLiteral         true
-    :FalseLiteral        false
+    :IntegerLiteral      #(Long/parseLong %)
+    :FloatLiteral        #(Double/parseDouble %)   ; ####TODO: consider using BigDecimal...
+    :TrueLiteral         true-literal
+    :FalseLiteral        false-literal
     :BooleanLiteral      identity
-    :VoidLiteral         nil
+    :VoidLiteral         void-literal
     :OutputStatement     output-statement
     :InputStatement      input-statement
-;    :VariableDeclaration variable-declaration
-    :VariableDeclaration print-ast
+    :VariableDeclaration variable-declaration
+;    :VariableDeclaration print-ast
+    :Expression          identity
   })
 
 (defn eval-lolcmis
