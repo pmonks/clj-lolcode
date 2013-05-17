@@ -35,7 +35,7 @@
   OutputStatement       = <'VISIBLE'> <Whitespace> (Identifier | Literal) <NewLine>
   InputStatement        = <'GIMMEH'> <Whitespace> Identifier <NewLine>
   VariableDeclaration   = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ'> <Whitespace> Expression | <'ITZ A'> <Whitespace> Type))? <NewLine>
-  Assignment            = Identifier <Whitespace> <'R'> <Whitespace> Expression
+  Assignment            = Identifier <Whitespace> <'R'> <Whitespace> Expression <NewLine>
 
   (* Non-statements *)
   Expression            = Identifier |

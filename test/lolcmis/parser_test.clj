@@ -219,8 +219,24 @@ TLDR" :MultiLineComment) => true
   (can-parse? "I HAS A PIE ITZ 3\r\n" :VariableDeclaration) => true
   (can-parse? "I HAS A PIE ITZ 3\r\n" :VariableDeclaration) => true
   (can-parse? "I HAS A ABCD ITZ A YARN\r\n" :VariableDeclaration) => true
-  (can-parse? "I HAS A ABCD ITZ EFGH\r\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A _ABCD ITZ EFGH\r\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A INVALID\r\n" :VariableDeclaration) => false
   (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A NOOB\r\n" :VariableDeclaration) => true
+)
+
+(facts "Assignments can be parsed."
+  (can-parse? "" :Assignment) => false
+  (can-parse? "ABCD R" :Assignment) => false
+  (can-parse? "ABCD R 1" :Assignment) => false
+  (can-parse? "ABCD R 1\n" :Assignment) => true
+  (can-parse? "_EFGHI R NOOB\n" :Assignment) => true
+  (can-parse? "ZZ167 R WIN\n" :Assignment) => true
+  (can-parse? "ZZ167 R LOSE\n" :Assignment) => true
+  (can-parse? "KITTEH R \"CUTE\"\n" :Assignment) => true
+  (can-parse? "ABCD R EFGHI\n" :Assignment) => true
+  (can-parse? "ABCD R EFGHI IS NOW A INVALID\n" :Assignment) => false
+  (can-parse? "ABCD R EFGHI IS NOW A YARN\n" :Assignment) => true
+  (can-parse? "ABCD R EFGHI IS NOW A NUMBR\n" :Assignment) => true
 )
 
 (def ^:private valid-programs-directory (file "test/valid"))
@@ -230,12 +246,3 @@ TLDR" :MultiLineComment) => true
 (def ^:private invalid-programs-directory (file "test/invalid"))
 (def ^:private invalid-test-programs (filter #(.endsWith (.getName %) ".LOL") (file-seq invalid-programs-directory)))
 (doall (map #(do (println "Parsing" (.getPath %) "...") (fact (can-parse-file? %) => false)) invalid-test-programs))
-
-;(print-ast "HAI 1.2\nVISIBLE \"HAI WRLD!\"\nVISIBLE \"BAI WRLD!\"\nKTHXBYE")
-
-
-(comment
-(print-ast "VISIBLE NOOB" :OutputStatement)
-(print-ast "HAI\nKTHXBYE")
-(print-ast "HAI\nVISIBLE \"HAI WRLD!\"\nKTHXBYE")
-)
