@@ -18,7 +18,7 @@
                   [org.clojure/tools.cli "0.2.2"]
                   [org.clojure/tools.trace "0.7.5"]
                   [org.clojure/tools.logging "0.2.6"]
-                  [instaparse "1.1.0-SNAPSHOT"]
+                  [instaparse "1.1.0"]
                   [ch.qos.logback/logback-classic "1.0.13"]
                 ]
   :profiles {:dev {:dependencies [
