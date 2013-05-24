@@ -31,5 +31,5 @@
         (println (str banner "\n Args\t\tDesc\n ----\t\t----\n filename\tThe filename of the LOLCMIS program to interpret.\n"))
         (let [source (slurp filename)]
           (if ast
-            (pprint (lp/parses source))
+            (map #(do (println "\n\n**** NEXT AST ****") (pprint %) (flush)) (lp/parses source))
             (li/interpret source)))))))

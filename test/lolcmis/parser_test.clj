@@ -9,39 +9,11 @@
 
 (ns lolcmis.parser-test
   (:use midje.sweet
-        clojure.pprint
         lolcmis.parser
-        clojure.java.io)
+        lolcmis.test-helper)
   (:require [instaparse.core :as insta]))
 
-(defn- print-ast
-  ([source]      (print-ast source :Program))
-  ([source rule] (pprint (parses source rule))))
-
-(defn- can-parse?
-  ([source]                    (can-parse? source :Program))
-  ([source rule]               (can-parse? source rule false))
-  ([source rule print-failure]
-    (let [asts   (parses source rule)
-          result (not (insta/failure? asts))]
-      (if (and print-failure (not result))
-        (do
-          (pprint "Parse failure:")
-          (pprint (insta/get-failure asts))))
-      result)))
-
-(defn- can-parse-file?
-  ([file]      (can-parse-file? file :Program))
-  ([file rule] (can-parse-file? file rule false))
-  ([file rule print-failure]
-    (let [source         (slurp file)
-          parsed         (can-parse? source rule print-failure)
-          number-of-asts (number-of-asts source rule)]
-
-      (if (and print-failure (> number-of-asts 1))
-        (pprint "Multiple ASTs"))
-      (and parsed (= number-of-asts 1))
-    )))
+(println "---- STRING LITERAL BASED PARSER TESTS ----")
 
 (facts "String literals can be parsed."
   (can-parse? "" :StringLiteral) => false
@@ -135,30 +107,42 @@ an explicit newline\"" :StringLiteral) => true
 (facts "Single line comments can be parsed."
   (can-parse? "" :SingleLineComment) => false
   (can-parse? " " :SingleLineComment) => false
-  (can-parse? "BTW" :SingleLineComment) => false
-  (can-parse? "BTW\n" :SingleLineComment) => true
+  (can-parse? "BTW" :SingleLineComment) => true
   (can-parse? "BTWabcd" :SingleLineComment) => false
   (can-parse? "BTWabcd\n" :SingleLineComment) => false
-  (can-parse? "BTW \n" :SingleLineComment) => true
-  (can-parse? "BTW abcd\n" :SingleLineComment) => true
-  (can-parse? "BTW abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097\r" :SingleLineComment) => true
-  (can-parse? "BTW VISIBLE GIMMEH I HAS A ITZ YARN NUMBR NUMBAR TROOF NOOB WIN LOSE\n" :SingleLineComment) => true
+  (can-parse? "BTW " :SingleLineComment) => true
+  (can-parse? "BTW abcd" :SingleLineComment) => true
+  (can-parse? "BTW abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097" :SingleLineComment) => true
+  (can-parse? "BTW VISIBLE GIMMEH I HAS A ITZ YARN NUMBR NUMBAR TROOF NOOB WIN LOSE" :SingleLineComment) => true
 )
 
 (facts "Multi line comments can be parsed."
   (can-parse? "" :MultiLineComment) => false
   (can-parse? " " :MultiLineComment) => false
   (can-parse? "OBTW" :MultiLineComment) => false
-  (can-parse? "OBTW\n" :MultiLineComment) => false
+  (can-parse? "OBTW TLDR" :MultiLineComment) => true
+  (can-parse? "OBTW TLDR" :MultiLineComment) => true
   (can-parse? "OBTW\nTLDR" :MultiLineComment) => true
   (can-parse? "OBTW \nTLDR" :MultiLineComment) => true
   (can-parse? "OBTW
 TLDR" :MultiLineComment) => true
-  (can-parse? "OBTW Here is a multi-line comment\nTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW Here is a multi-line comment TLDR" :MultiLineComment) => true
   (can-parse? "OBTW\nHere is a multi-line comment\rTLDR" :MultiLineComment) => true
   (can-parse? "OBTW\n Here \nis \na\n multi-line\n comment\n\r\n\r\r\nTLDR" :MultiLineComment) => true
   (can-parse? "OBTW\n abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097\rTLDR" :MultiLineComment) => true
-  (can-parse? "OBTW\nVISIBLE\rGIMMEH\r\nI HAS A\nITZ\nYARN\nNUMBR\nNUMBAR\nTROOF\nNOOB\nWIN\nLOSE\nTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW
+VISIBLE
+  GIMMEH
+    I HAS A
+ITZ
+YARN
+NUMBR
+NUMBAR
+TROOF
+NOOB
+WIN
+LOSE
+TLDR" :MultiLineComment) => true
 )
 
 (facts "Import statements can be parsed."
@@ -168,8 +152,8 @@ TLDR" :MultiLineComment) => true
   (can-parse? " CAN HAZ" :ImportStatement) => false
   (can-parse? "CAN HAZ ?" :ImportStatement) => false
   (can-parse? "CAN HAZ STDIO" :ImportStatement) => false
-  (can-parse? "CAN HAZ STDIO?\n" :ImportStatement) => true
-  (can-parse? "CAN HAZ CIMS?\r" :ImportStatement) => true
+  (can-parse? "CAN HAZ STDIO?" :ImportStatement) => true
+  (can-parse? "CAN HAZ CIMS?" :ImportStatement) => true
 )
 
 (facts "Output statements can be parsed."
@@ -178,14 +162,14 @@ TLDR" :MultiLineComment) => true
   (can-parse? "VISIBLE" :OutputStatement) => false
   (can-parse? "VISIBLE " :OutputStatement) => false
   (can-parse? " VISIBLE" :OutputStatement) => false
-  (can-parse? "VISIBLE \"\"\n" :OutputStatement) => true
-  (can-parse? "VISIBLE \"HAI WORLD!\"\r" :OutputStatement) => true
-  (can-parse? "VISIBLE 1234\r\n" :OutputStatement) => true
-  (can-parse? "VISIBLE 1234.5678\n" :OutputStatement) => true
-  (can-parse? "VISIBLE WIN\n" :OutputStatement) => true
-  (can-parse? "VISIBLE LOSE\n" :OutputStatement) => true
-  (can-parse? "VISIBLE NOOB\n" :OutputStatement) => true
-  (can-parse? "VISIBLE ABCD\n" :OutputStatement) => true
+  (can-parse? "VISIBLE \"\"" :OutputStatement) => true
+  (can-parse? "VISIBLE \"HAI WORLD!\"" :OutputStatement) => true
+  (can-parse? "VISIBLE 1234" :OutputStatement) => true
+  (can-parse? "VISIBLE 1234.5678" :OutputStatement) => true
+  (can-parse? "VISIBLE WIN" :OutputStatement) => true
+  (can-parse? "VISIBLE LOSE" :OutputStatement) => true
+  (can-parse? "VISIBLE NOOB" :OutputStatement) => true
+  (can-parse? "VISIBLE ABCD" :OutputStatement) => true
 )
 
 (facts "Input statements can be parsed."
@@ -194,55 +178,84 @@ TLDR" :MultiLineComment) => true
   (can-parse? "GIMMEH" :InputStatement) => false
   (can-parse? "GIMMEH " :InputStatement) => false
   (can-parse? " GIMMEH" :InputStatement) => false
-  (can-parse? "GIMMEH \"\"\n" :InputStatement) => false
-  (can-parse? "GIMMEH \"HAI WORLD!\"\r" :InputStatement) => false
-  (can-parse? "GIMMEH 1234\r\n" :InputStatement) => false
-  (can-parse? "GIMMEH 1234.5678\n" :InputStatement) => false
-  (can-parse? "GIMMEH WIN\n" :InputStatement) => false     ; Reserved word
-  (can-parse? "GIMMEH LOSE\n" :InputStatement) => false    ; Reserved word
-  (can-parse? "GIMMEH NOOB\n" :InputStatement) => false    ; Reserved word
-  (can-parse? "GIMMEH ABCD\n" :InputStatement) => true
-  (can-parse? "GIMMEH ABCD       \r\n" :InputStatement) => true
-  (can-parse? "GIMMEH MY_VAR\n" :InputStatement) => true
-  (can-parse? "GIMMEH _MY_VAR\n" :InputStatement) => true
+  (can-parse? "GIMMEH \"\"" :InputStatement) => false
+  (can-parse? "GIMMEH \"HAI WORLD!\"" :InputStatement) => false
+  (can-parse? "GIMMEH 1234" :InputStatement) => false
+  (can-parse? "GIMMEH 1234.5678" :InputStatement) => false
+  (can-parse? "GIMMEH WIN" :InputStatement) => false     ; Reserved word
+  (can-parse? "GIMMEH LOSE" :InputStatement) => false    ; Reserved word
+  (can-parse? "GIMMEH NOOB" :InputStatement) => false    ; Reserved word
+  (can-parse? "GIMMEH ABCD" :InputStatement) => true
+  (can-parse? "GIMMEH MY_VAR" :InputStatement) => true
+  (can-parse? "GIMMEH _MY_VAR" :InputStatement) => true
 )
 
 (facts "Variable declarations can be parsed."
   (can-parse? "" :VariableDeclaration) => false
   (can-parse? "I HAS A" :VariableDeclaration) => false
   (can-parse? "I HAS A " :VariableDeclaration) => false
-  (can-parse? "I HAS A ABCD\n" :VariableDeclaration) => true
-  (can-parse? "I HAS A NOOB\n" :VariableDeclaration) => false
-  (can-parse? "I HAS A ABCD       \r" :VariableDeclaration) => true
-  (can-parse? "I HAS A NOOB\n" :VariableDeclaration) => false    ; Reserved word
-  (can-parse? "I HAS A ABCD ITZ \"HAI WORLD!\"\r\n" :VariableDeclaration) => true
-  (can-parse? "I HAS A PIE ITZ 3\r\n" :VariableDeclaration) => true
-  (can-parse? "I HAS A PIE ITZ 3\r\n" :VariableDeclaration) => true
-  (can-parse? "I HAS A ABCD ITZ A YARN\r\n" :VariableDeclaration) => true
-  (can-parse? "I HAS A _ABCD ITZ EFGH\r\n" :VariableDeclaration) => true
-  (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A INVALID\r\n" :VariableDeclaration) => false
-  (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A NOOB\r\n" :VariableDeclaration) => true
+  (can-parse? "I HAS A ABCD" :VariableDeclaration) => true
+  (can-parse? "I HAS A NOOB" :VariableDeclaration) => false
+  (can-parse? "I HAS A ABCD ITZ \"HAI WORLD!\"" :VariableDeclaration) => true
+  (can-parse? "I HAS A PIE ITZ 3" :VariableDeclaration) => true
+  (can-parse? "I HAS A PIE ITZ 3" :VariableDeclaration) => true
+  (can-parse? "I HAS A ABCD ITZ A YARN" :VariableDeclaration) => true
+  (can-parse? "I HAS A _ABCD ITZ EFGH" :VariableDeclaration) => true
+  (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A INVALID" :VariableDeclaration) => false
+  (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A NOOB" :VariableDeclaration) => true
 )
 
 (facts "Assignments can be parsed."
   (can-parse? "" :Assignment) => false
   (can-parse? "ABCD R" :Assignment) => false
-  (can-parse? "ABCD R 1" :Assignment) => false
-  (can-parse? "ABCD R 1\n" :Assignment) => true
-  (can-parse? "_EFGHI R NOOB\n" :Assignment) => true
-  (can-parse? "ZZ167 R WIN\n" :Assignment) => true
-  (can-parse? "ZZ167 R LOSE\n" :Assignment) => true
-  (can-parse? "KITTEH R \"CUTE\"\n" :Assignment) => true
-  (can-parse? "ABCD R EFGHI\n" :Assignment) => true
-  (can-parse? "ABCD R EFGHI IS NOW A INVALID\n" :Assignment) => false
-  (can-parse? "ABCD R EFGHI IS NOW A YARN\n" :Assignment) => true
-  (can-parse? "ABCD R EFGHI IS NOW A NUMBR\n" :Assignment) => true
+  (can-parse? "ABCD R 1" :Assignment) => true
+  (can-parse? "_EFGHI R NOOB" :Assignment) => true
+  (can-parse? "ZZ167 R WIN" :Assignment) => true
+  (can-parse? "ZZ167 R LOSE" :Assignment) => true
+  (can-parse? "KITTEH R \"CUTE\"" :Assignment) => true
+  (can-parse? "ABCD R EFGHI" :Assignment) => true
+  (can-parse? "ABCD R EFGHI IS NOW A INVALID" :Assignment) => false
+  (can-parse? "ABCD R EFGHI IS NOW A YARN" :Assignment) => true
+  (can-parse? "ABCD R EFGHI IS NOW A NUMBR" :Assignment) => true
 )
 
-(def ^:private valid-programs-directory (file "test/valid"))
-(def ^:private valid-test-programs (filter #(.endsWith (.getName %) ".LOL") (file-seq valid-programs-directory)))
-(doall (map #(do (println "Parsing" (.getPath %) "...") (fact (can-parse-file? % :Program true) => true)) valid-test-programs))
+(facts "Equals expressions can be parsed."
+  (can-parse? "" :EqualsExpression) >= false
+  (can-parse? "BOTH SAEM" :EqualsExpression) => false
+  (can-parse? "BOTH SAEM VAR" :EqualsExpression) => false
+  (can-parse? "BOTH SAEM VAR AN 1" :EqualsExpression) => true
+  (can-parse? "BOTH SAEM _VAR AN \"KITTEHZ!!\"" :EqualsExpression) => true
+  (can-parse? "BOTH SAEM _VAR AN OTHER_VAR" :EqualsExpression) => true
+)
 
-(def ^:private invalid-programs-directory (file "test/invalid"))
-(def ^:private invalid-test-programs (filter #(.endsWith (.getName %) ".LOL") (file-seq invalid-programs-directory)))
-(doall (map #(do (println "Parsing" (.getPath %) "...") (fact (can-parse-file? %) => false)) invalid-test-programs))
+(facts "If-only conditionals can be parsed."
+  (can-parse? "" :Conditional) => false
+  (can-parse? "BTW" :Conditional) => false
+  (can-parse? "BOTH SAEM" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR AN 1" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR AN 1\nO RLY?" :Conditional) => false
+  (can-parse? "O RLY?\nOIC" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR AN 1\nO RLY?\rYA RLY\nOIC" :Conditional) => true
+  (can-parse? "BOTH SAEM VAR AN \"KITTEHZ\",O RLY?,YA RLY,OIC" :Conditional) => true
+  (can-parse? "BOTH SAEM VAR_1 AN VAR_2
+    O RLY?
+      YA RLY
+
+    OIC" :Conditional) => true
+)
+
+(facts "If-else conditionals can be parsed."
+  (can-parse? "BOTH SAEM VAR1 AN VAR2\nO RLY?\nYA RLY\nNO" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR AN 1\nO RLY?\nYA RLY\nNOWAI" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR AN \"KITTEHZ!!1\"\nO RLY?\nYA RLY\nWAI" :Conditional) => false
+  (can-parse? "BOTH SAEM _VAR AN 3.14156,O RLY?,YA RLY,NO WAI" :Conditional) => false
+  (can-parse? "BOTH SAEM _VAR AN _VAR,O RLY?,NO WAI" :Conditional) => false
+  (can-parse? "BOTH SAEM _VAR AN _VAR,O RLY?,NO WAI,OIC" :Conditional) => false
+  (can-parse? "BOTH SAEM _VAR AN _VAR,O RLY?,NO WAI,OIC" :Conditional) => false
+  (can-parse? "BOTH SAEM _VAR AN _VAR\rO RLY?\rYA RLY\nNO WAI\nOIC" :Conditional) => true
+  (can-parse? "BOTH SAEM VAR1 AN VAR2
+    O RLY?
+YA RLY
+NO WAI
+OIC" :Conditional) => true
+)

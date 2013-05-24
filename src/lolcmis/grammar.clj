@@ -11,36 +11,45 @@
 
 (ns lolcmis.grammar)
 
-; LOLCMIS grammar, partially based on the LOLCODE grammars at http://forum.lolcode.com/viewtopic.php?id=318
+; LOLCMIS grammar, partially based on the LOLCODE grammars at
+; http://forum.lolcode.com/viewtopic.php?id=318 and https://github.com/jynnantonix/lolcode/blob/master/BNFGrammar.txt
 (def lolcmis-grammar "
   (* Program structure *)
   Program               = <SkipLine*> Header StatementList <'KTHXBYE'> <SkipLine*>
-  Header                = <'HAI'> <NewLine> |
-                          <'HAI'> <Whitespace> FloatLiteral <NewLine>
+  Header                = <'HAI'> <EndOfStatement> |
+                          <'HAI'> <Whitespace> FloatLiteral <EndOfStatement>
   StatementList         = Statement*
 
   (* Statements *)
-  Statement             = <SkipLine> |
-                          ImportStatement |
-                          OutputStatement |
-                          InputStatement |
-                          VariableDeclaration |
-                          Assignment
+  Statement             = <OptionalWhitespace>
+                          (<SkipLine> |
+                           ImportStatement |
+                           OutputStatement |
+                           InputStatement |
+                           VariableDeclaration |
+                           Assignment |
+                           Conditional)
+                          <EndOfStatement>
   SkipLine              = Comment |
-                          NewLine
+                          EndOfStatement
   Comment               = SingleLineComment | MultiLineComment
-  SingleLineComment     = 'BTW' (Whitespace AnyText)? NewLine
-  MultiLineComment      = 'OBTW' ((Whitespace | NewLine) AnyText?)+ 'TLDR'
-  ImportStatement       = <'CAN HAZ'> <Whitespace> Identifier <'?'> <NewLine>
-  OutputStatement       = <'VISIBLE'> <Whitespace> (Identifier | Literal) <NewLine>
-  InputStatement        = <'GIMMEH'> <Whitespace> Identifier <NewLine>
-  VariableDeclaration   = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ'> <Whitespace> Expression | <'ITZ A'> <Whitespace> Type))? <NewLine>
-  Assignment            = Identifier <Whitespace> <'R'> <Whitespace> Expression <NewLine>
+  SingleLineComment     = <'BTW'> (Whitespace OptionalNonWhitespace)?
+  MultiLineComment      = <'OBTW'> (Whitespace | NewLine) (Whitespace | NewLine | NonWhitespaceChar)* <'TLDR'>
+  ImportStatement       = <'CAN HAZ'> <Whitespace> Identifier <'?'>
+  OutputStatement       = <'VISIBLE'> <Whitespace> (Identifier | Literal)
+  InputStatement        = <'GIMMEH'> <Whitespace> Identifier
+  VariableDeclaration   = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ'> <Whitespace> Expression | <'ITZ A'> <Whitespace> Type))?
+  Assignment            = Identifier <Whitespace> <'R'> <Whitespace> Expression
+  Conditional           = IfClause <SkipLine*> ElseIfClause* <SkipLine*> ElseClause? <SkipLine*> <OptionalWhitespace> <'OIC'>
+  IfClause              = BooleanExpression <EndOfStatement> <SkipLine*> <OptionalWhitespace> <'O RLY?'> <EndOfStatement> <SkipLine*> <OptionalWhitespace> <'YA RLY'> <EndOfStatement> StatementList
+  ElseIfClause          = <OptionalWhitespace> <'MEBBE'> (<Whitespace> | <NewLine>) BooleanExpression <EndOfStatement> StatementList
+  ElseClause            = <OptionalWhitespace> <'NO WAI'> <EndOfStatement> StatementList
 
-  (* Non-statements *)
+  (* Expressions *)
   Expression            = Identifier |
                           Literal |
-                          CastExpression
+                          CastExpression |
+                          BooleanExpression
   CastExpression        = Identifier <Whitespace> <'IS NOW A'> <Whitespace> Type
   Literal               = StringLiteral |
                           IntegerLiteral |
@@ -49,15 +58,21 @@
                           VoidLiteral
   StringLiteral         = <DoubleQuote> (EscapedDoubleQuote | StringCharacter)* <DoubleQuote>
   BooleanLiteral        = TrueLiteral | FalseLiteral
+  BooleanExpression     = EqualsExpression (* Add others here *)
+  EqualsExpression      = <'BOTH SAEM'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
 
   (* Almost-terminals *)
-  NewLine               = OptionalWhitespace ('\\n' | '\\r' | '\\r\\n' | '\\u0085' | '\\u2028' | '\\u2029' | '\\u000B')
+  EndOfStatement        = OptionalWhitespace (NewLine | ',')
   Identifier            = !ReservedWord #'[_\\p{Alpha}]\\w*'
 
   (* Terminals *)
-  AnyText               = #'.*'
-  Whitespace            = #'[ \\t]+'
-  OptionalWhitespace    = #'[ \\t]*'
+  NewLine               = '\\n' | '\\r' | '\\r\\n' | '\\u0085' | '\\u2028' | '\\u2029' | '\\u000B'
+  NonWhitespaceChar     = #'.'
+  NonWhitespace         = NonWhitespaceChar+
+  OptionalNonWhitespace = NonWhitespaceChar*
+  WhitespaceChar        = ' ' | '\\t'
+  Whitespace            = WhitespaceChar+
+  OptionalWhitespace    = WhitespaceChar*
   IntegerLiteral        = #'\\d+'
   FloatLiteral          = #'\\d+\\.\\d+'
   TrueLiteral           = 'WIN'
@@ -77,6 +92,7 @@
 
 
 
+; A nice BNF grammar is at https://github.com/jynnantonix/lolcode/blob/master/BNFGrammar.txt
 
 ; Reference grammar copied and modified from http://forum.lolcode.com/viewtopic.php?id=318
 
