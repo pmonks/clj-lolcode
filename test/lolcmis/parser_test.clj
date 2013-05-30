@@ -76,9 +76,9 @@ an explicit newline\"" :StringLiteral) => true
   (can-parse? "WIN" :BooleanLiteral) => true
   (can-parse? " WIN" :BooleanLiteral) => false
   (can-parse? "WIN " :BooleanLiteral) => false
-  (can-parse? "LOSE" :BooleanLiteral) => true
-  (can-parse? " LOSE" :BooleanLiteral) => false
-  (can-parse? "LOSE " :BooleanLiteral) => false
+  (can-parse? "FAIL" :BooleanLiteral) => true
+  (can-parse? " FAIL" :BooleanLiteral) => false
+  (can-parse? "FAIL " :BooleanLiteral) => false
 )
 
 (facts "Void literals can be parsed."
@@ -192,7 +192,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "GIMMEH 1234" :InputStatement) => false
   (can-parse? "GIMMEH 1234.5678" :InputStatement) => false
   (can-parse? "GIMMEH WIN" :InputStatement) => false     ; Reserved word
-  (can-parse? "GIMMEH LOSE" :InputStatement) => false    ; Reserved word
+  (can-parse? "GIMMEH FAIL" :InputStatement) => false    ; Reserved word
   (can-parse? "GIMMEH NOOB" :InputStatement) => false    ; Reserved word
   (can-parse? "GIMMEH ABCD" :InputStatement) => true
   (can-parse? "GIMMEH MY_VAR" :InputStatement) => true

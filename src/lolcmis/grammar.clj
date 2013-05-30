@@ -36,7 +36,7 @@
   SingleLineComment        = <'BTW'> (Whitespace NotNewLine*)?
   MultiLineComment         = <'OBTW'> (Whitespace | NewLine) ((NotNewLine | NewLine)* (Whitespace | NewLine))? <'TLDR'>
   ImportStatement          = <'CAN HAZ'> <Whitespace> Identifier <'?'>
-  OutputStatement          = <'VISIBLE'> <Whitespace> (Identifier | Literal)
+  OutputStatement          = <'VISIBLE'> <Whitespace> Expression
   InputStatement           = <'GIMMEH'> <Whitespace> Identifier
   VariableDeclaration      = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ'> <Whitespace> Expression | <'ITZ A'> <Whitespace> Type))?
   Assignment               = Identifier <Whitespace> <'R'> <Whitespace> Expression
@@ -96,11 +96,11 @@
   IntegerLiteral           = #'-?\\d+'
   FloatLiteral             = #'-?\\d+\\.\\d+'
   TrueLiteral              = 'WIN'
-  FalseLiteral             = 'LOSE'
+  FalseLiteral             = 'FAIL'
   VoidLiteral              = 'NOOB'
-  Type                     = 'YARN' | 'NUMBR' | 'NUMBAR' | 'TROOF' | 'NOOB'
+  Type                     = 'YARN' | 'NUMBR' | 'NUMBAR' | 'TROOF' | 'NOOB' (* | BUKKIT *)
   DoubleQuote              = '\"'
-  EscapedDoubleQuote       = '\\\\\"'
+  EscapedDoubleQuote       = '\\\\\"'   (* Don't ask... o_O *)
   StringCharacter          = #'[^\"]'
 
   (* Reserved words *)
