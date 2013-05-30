@@ -36,8 +36,11 @@ an explicit newline\"" :StringLiteral) => true
   (can-parse? "\"" :IntegerLiteral) => false
   (can-parse? " " :IntegerLiteral) => false
   (can-parse? "abcd" :IntegerLiteral) => false
+  (can-parse? "-" :IntegerLiteral) => false
   (can-parse? "0" :IntegerLiteral) => true
   (can-parse? "12" :IntegerLiteral) => true
+  (can-parse? "-12" :IntegerLiteral) => true
+  (can-parse? "-0" :IntegerLiteral) => true
   (can-parse? "1234567890" :IntegerLiteral) => true
   (can-parse? "1234567890a" :IntegerLiteral) => false
   (can-parse? "a1234567890" :IntegerLiteral) => false
@@ -49,14 +52,18 @@ an explicit newline\"" :StringLiteral) => true
   (can-parse? "\"" :FloatLiteral) => false
   (can-parse? " " :FloatLiteral) => false
   (can-parse? "abcd" :FloatLiteral) => false
+  (can-parse? "-" :FloatLiteral) => false
   (can-parse? "0" :FloatLiteral) => false
   (can-parse? "12" :FloatLiteral) => false
+  (can-parse? "-12" :FloatLiteral) => false
   (can-parse? "1234567890" :FloatLiteral) => false
   (can-parse? "1234567890a" :FloatLiteral) => false
   (can-parse? "a1234567890" :FloatLiteral) => false
   (can-parse? "0.0" :FloatLiteral) => true
   (can-parse? "12.34" :FloatLiteral) => true
   (can-parse? "12345.67890" :FloatLiteral) => true
+  (can-parse? "-12.34" :FloatLiteral) => true
+  (can-parse? "-0.0" :FloatLiteral) => true
 )
 
 (facts "Boolean literals can be parsed."
@@ -239,11 +246,73 @@ TLDR" :MultiLineComment) => true
 
 (facts "Equals expressions can be parsed."
   (can-parse? "" :EqualsExpression) >= false
+  (can-parse? " " :EqualsExpression) >= false
   (can-parse? "BOTH SAEM" :EqualsExpression) => false
   (can-parse? "BOTH SAEM VAR" :EqualsExpression) => false
   (can-parse? "BOTH SAEM VAR AN 1" :EqualsExpression) => true
   (can-parse? "BOTH SAEM _VAR AN \"KITTEHZ!!\"" :EqualsExpression) => true
   (can-parse? "BOTH SAEM _VAR AN OTHER_VAR" :EqualsExpression) => true
+)
+
+(facts "Not equals expressions can be parsed."
+  (can-parse? "" :NotEqualsExpression) >= false
+  (can-parse? " " :NotEqualsExpression) >= false
+  (can-parse? "DIFFRINT" :NotEqualsExpression) => false
+  (can-parse? "DIFFRINT VAR" :NotEqualsExpression) => false
+  (can-parse? "DIFFRINT VAR AN 1" :NotEqualsExpression) => true
+  (can-parse? "DIFFRINT _VAR AN \"KITTEHZ!!\"" :NotEqualsExpression) => true
+  (can-parse? "DIFFRINT _VAR AN OTHER_VAR" :NotEqualsExpression) => true
+)
+
+(facts "And expressions can be parsed."
+  (can-parse? "" :AndExpression) >= false
+  (can-parse? " " :AndExpression) >= false
+  (can-parse? "BOTH" :AndExpression) => false
+  (can-parse? "BOTH OF VAR" :AndExpression) => false
+  (can-parse? "BOTH OF WIN AN WIN" :AndExpression) => true
+  (can-parse? "BOTH OF _VAR AN OTHER_VAR" :AndExpression) => true
+)
+
+(facts "Or expressions can be parsed."
+  (can-parse? "" :OrExpression) >= false
+  (can-parse? " " :OrExpression) >= false
+  (can-parse? "EITHER" :OrExpression) => false
+  (can-parse? "EITHER OF VAR" :OrExpression) => false
+  (can-parse? "EITHER OF VAR AN 1" :OrExpression) => true
+  (can-parse? "EITHER OF _VAR AN OTHER_VAR" :OrExpression) => true
+)
+
+(facts "Addition expressions can be parsed."
+  (can-parse? "" :AdditionExpression) >= false
+  (can-parse? " " :AdditionExpression) >= false
+  (can-parse? "SUM" :AdditionExpression) => false
+  (can-parse? "SUM OF" :AdditionExpression) => false
+  (can-parse? "SUM OF VAR" :AdditionExpression) => false
+  (can-parse? "SUM OF VAR AN" :AdditionExpression) => false
+  (can-parse? "SUM OF VAR AN 1" :AdditionExpression) => true
+  (can-parse? "SUM OF _VAR AN OTHER_VAR" :AdditionExpression) => true
+)
+
+(fact "Max expressions can be parsed."
+  (can-parse? "" :MaxExpression) >= false
+  (can-parse? " " :MaxExpression) >= false
+  (can-parse? "BIGGR" :MaxExpression) >= false
+  (can-parse? "BIGGR OF" :MaxExpression) >= false
+  (can-parse? "BIGGR OF VAR" :MaxExpression) >= false
+  (can-parse? "BIGGR OF VAR AN" :MaxExpression) >= false
+  (can-parse? "BIGGR OF VAR AN 1" :MaxExpression) >= true
+  (can-parse? "BIGGR OF VAR AN OTHER_VAR" :MaxExpression) >= true
+)
+
+(fact "Min expressions can be parsed."
+  (can-parse? "" :MinExpression) >= false
+  (can-parse? " " :MinExpression) >= false
+  (can-parse? "SMALLR" :MinExpression) >= false
+  (can-parse? "SMALLR OF" :MinExpression) >= false
+  (can-parse? "SMALLR OF VAR" :MinExpression) >= false
+  (can-parse? "SMALLR OF VAR AN" :MinExpression) >= false
+  (can-parse? "SMALLR OF VAR AN 1" :MinExpression) >= true
+  (can-parse? "SMALLR OF VAR AN OTHER_VAR" :MinExpression) >= true
 )
 
 (facts "If-only conditionals can be parsed."

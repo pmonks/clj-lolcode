@@ -1,0 +1,21 @@
+OBTW
+Testing of an if / elseif / elseif / else conditional.
+TLDR
+
+HAI 1.2
+CAN HAZ STDIO?
+
+I HAS A VAR ITZ 1
+
+BOTH SAEM VAR AN 1
+O RLY?
+  YA RLY
+    VISIBLE "VAR IZ 1"
+  MEBBE BOTH SAEM VAR AN 2
+    VISIBLE "VAR IZ 2"
+  MEBBE BOTH SAEM VAR AN 3
+    VISIBLE "VAR IZ 3"
+  NO WAI
+    VISIBLE "VAR IZ NOT 1 OR 2 OR 3!!!1"
+OIC
+KTHXBYE
