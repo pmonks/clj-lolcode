@@ -11,8 +11,11 @@
 
 (ns lolcmis.grammar)
 
-; LOLCMIS grammar, partially based on the LOLCODE grammars at
-; http://forum.lolcode.com/viewtopic.php?id=318 and https://github.com/jynnantonix/lolcode/blob/master/BNFGrammar.txt
+; LOLCMIS grammar
+; LOLCODE 1.2 specification available at http://archive.is/HKS3
+; Some pre-existing LOLCODE grammars are at:
+; * http://forum.lolcode.com/viewtopic.php?id=318
+; * https://github.com/jynnantonix/lolcode/blob/master/BNFGrammar.txt
 (def lolcmis-grammar "
   (* Program structure *)
   Program                  = Header StatementList Footer
