@@ -42,21 +42,6 @@
   [& args]
   (println args))
 
-(defn- true-literal
-  "Returns true, regardless of the arguments."
-  [& args]
-  true)
-
-(defn- false-literal
-  "Returns false, regardless of the arguments."
-  [& args]
-  false)
-
-(defn- void-literal
-  "Returns nil, regardless of the arguments."
-  [& args]
-  nil)
-
 (defn- output-statement
   "OutputStatement implementation."
   [& args]
@@ -98,10 +83,25 @@
                   cast-type (second (nth (second args) 2))]
               (case cast-type
                 "YARN"   (set-var var-name (str                  value))
-                "NUMBR"  (set-var var-name (Long/parseLong       value))   ; ####TODO: handle cast failures
+                "NUMBR"  (set-var var-name (Long/parseLong       value))   ; ####TODO: handle cast failures, consider using BigInteger...
                 "NUMBAR" (set-var var-name (Double/parseDouble   value))   ; ####TODO: handle cast failures, consider using BigDecimal...
                 "TROOF"  (set-var var-name (Boolean/parseBoolean value))   ; ####TODO: handle cast failures
                 "NOOB"   (set-var var-name value))))))))
+
+(defn- cast-expression
+  "CastExpression implementation."
+  [& args]
+  (let [var-name  (first args)
+        type      (second args)
+        old-value (get-var var-name)
+        new-value (case type
+                    "YARN"   (str                  old-value)
+                    "NUMBR"  (Long/parseLong       old-value)   ; ####TODO: handle cast failures, consider using BigInteger...
+                    "NUMBAR" (Double/parseDouble   old-value)   ; ####TODO: handle cast failures, consider using BigDecimal...
+                    "TROOF"  (Boolean/parseBoolean old-value)   ; ####TODO: handle cast failures
+                    "NOOB"   old-value)]
+    (set-var var-name new-value)
+    new-value))
 
 ; The map of tokens to functions for the interpreter.
 (def ^:private interpreter-function-map
@@ -110,16 +110,17 @@
     :StringLiteral       str
     :StringCharacter     str
     :EscapedDoubleQuote  str
-    :IntegerLiteral      #(Long/parseLong %)
+    :IntegerLiteral      #(Long/parseLong %)       ; ####TODO: consider using BigInteger...
     :FloatLiteral        #(Double/parseDouble %)   ; ####TODO: consider using BigDecimal...
-    :TrueLiteral         true-literal
-    :FalseLiteral        false-literal
+    :TrueLiteral         #(identity true)
+    :FalseLiteral        #(identity false)
     :BooleanLiteral      identity
-    :VoidLiteral         void-literal
+    :VoidLiteral         #(identity nil)
     :OutputStatement     output-statement
     :InputStatement      input-statement
     :VariableDeclaration variable-declaration
     :Expression          identity
+    :CastExpression      cast-expression
   })
 
 ; The interpreter itself

@@ -112,6 +112,8 @@ an explicit newline\"" :StringLiteral) => true
   (can-parse? "BTWabcd\n" :SingleLineComment) => false
   (can-parse? "BTW " :SingleLineComment) => true
   (can-parse? "BTW abcd" :SingleLineComment) => true
+  (can-parse? "BTW abcd    " :SingleLineComment) => true
+  (can-parse? "BTW abcd\t" :SingleLineComment) => true
   (can-parse? "BTW abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097" :SingleLineComment) => true
   (can-parse? "BTW VISIBLE GIMMEH I HAS A ITZ YARN NUMBR NUMBAR TROOF NOOB WIN LOSE" :SingleLineComment) => true
 )
@@ -126,7 +128,7 @@ an explicit newline\"" :StringLiteral) => true
   (can-parse? "OBTW \nTLDR" :MultiLineComment) => true
   (can-parse? "OBTW
 TLDR" :MultiLineComment) => true
-  (can-parse? "OBTW Here is a multi-line comment TLDR" :MultiLineComment) => true
+  (can-parse? "OBTW Here is a multi-line comment on a single line TLDR" :MultiLineComment) => true
   (can-parse? "OBTW\nHere is a multi-line comment\rTLDR" :MultiLineComment) => true
   (can-parse? "OBTW\n Here \nis \na\n multi-line\n comment\n\r\n\r\r\nTLDR" :MultiLineComment) => true
   (can-parse? "OBTW\n abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097\rTLDR" :MultiLineComment) => true
@@ -192,6 +194,7 @@ TLDR" :MultiLineComment) => true
 
 (facts "Variable declarations can be parsed."
   (can-parse? "" :VariableDeclaration) => false
+  (can-parse? " " :VariableDeclaration) => false
   (can-parse? "I HAS A" :VariableDeclaration) => false
   (can-parse? "I HAS A " :VariableDeclaration) => false
   (can-parse? "I HAS A ABCD" :VariableDeclaration) => true
@@ -205,8 +208,23 @@ TLDR" :MultiLineComment) => true
   (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A NOOB" :VariableDeclaration) => true
 )
 
+(facts "Cast expressions can be parsed."
+  (can-parse? "" :CastExpression) => false
+  (can-parse? " " :CastExpression) => false
+  (can-parse? "MY_VAR IS" :CastExpression) => false
+  (can-parse? "MY_VAR IS NOW" :CastExpression) => false
+  (can-parse? "MY_VAR IS NOW A" :CastExpression) => false
+  (can-parse? "MY_VAR IS NOW A FOO" :CastExpression) => false
+  (can-parse? "MY_VAR IS NOW A YARN" :CastExpression) => true
+  (can-parse? "MY_VAR IS NOW A NUMBR" :CastExpression) => true
+  (can-parse? "MY_VAR IS NOW A NUMBAR" :CastExpression) => true
+  (can-parse? "MY_VAR IS NOW A TROOF" :CastExpression) => true
+  (can-parse? "MY_VAR IS NOW A NOOB" :CastExpression) => true
+)
+
 (facts "Assignments can be parsed."
   (can-parse? "" :Assignment) => false
+  (can-parse? " " :Assignment) => false
   (can-parse? "ABCD R" :Assignment) => false
   (can-parse? "ABCD R 1" :Assignment) => true
   (can-parse? "_EFGHI R NOOB" :Assignment) => true
@@ -259,3 +277,5 @@ YA RLY
 NO WAI
 OIC" :Conditional) => true
 )
+
+

@@ -16,21 +16,22 @@
 (def lolcmis-grammar "
   (* Program structure *)
   Program               = Header StatementList Footer
-  Header                = <SkipLine*> <OptionalWhitespace> <'HAI'> (<EndOfStatement> | <Whitespace> FloatLiteral <EndOfStatement>)
-  Footer                = <OptionalWhitespace> <'KTHXBYE'> <SkipLine*>
-  StatementList         = (<SkipLine> | Statement)*
+  Header                = <Skip*> <OptionalWhitespace> <'HAI'> (<EndOfStatement> | <Whitespace> FloatLiteral <EndOfStatement>)
+  StatementList         = (<Skip> | Statement)*
+  Footer                = <OptionalWhitespace> <'KTHXBYE'> <Skip*>
 
   (* Statements *)
+  Skip                  = BlankLine |
+                          Comment EndOfStatement?
   Statement             = <OptionalWhitespace>
                           (ImportStatement |
                            OutputStatement |
                            InputStatement |
                            VariableDeclaration |
                            Assignment |
-                           Conditional)
+                           Conditional |
+                           CastExpression)
                           <EndOfStatement>
-  SkipLine              = BlankLine |
-                          Comment
   Comment               = SingleLineComment | MultiLineComment
   SingleLineComment     = <'BTW'> (Whitespace NotNewLine*)?
   MultiLineComment      = <'OBTW'> (Whitespace | NewLine) ((NotNewLine | NewLine)* (Whitespace | NewLine))? <'TLDR'>
@@ -39,8 +40,8 @@
   InputStatement        = <'GIMMEH'> <Whitespace> Identifier
   VariableDeclaration   = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ'> <Whitespace> Expression | <'ITZ A'> <Whitespace> Type))?
   Assignment            = Identifier <Whitespace> <'R'> <Whitespace> Expression
-  Conditional           = IfClause <SkipLine*> ElseIfClause* <SkipLine*> ElseClause? <SkipLine*> <OptionalWhitespace> <'OIC'>
-  IfClause              = BooleanExpression <EndOfStatement> <SkipLine*> <OptionalWhitespace> <'O RLY?'> <EndOfStatement> <SkipLine*> <OptionalWhitespace> <'YA RLY'> <EndOfStatement> StatementList
+  Conditional           = IfClause <Skip*> ElseIfClause* <Skip*> ElseClause? <Skip*> <OptionalWhitespace> <'OIC'>
+  IfClause              = BooleanExpression <EndOfStatement> <Skip*> <OptionalWhitespace> <'O RLY?'> <EndOfStatement> <Skip*> <OptionalWhitespace> <'YA RLY'> <EndOfStatement> StatementList
   ElseIfClause          = <OptionalWhitespace> <'MEBBE'> (<Whitespace> | <NewLine>) BooleanExpression <EndOfStatement> StatementList
   ElseClause            = <OptionalWhitespace> <'NO WAI'> <EndOfStatement> StatementList
 
