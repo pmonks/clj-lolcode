@@ -15,26 +15,25 @@
 ; http://forum.lolcode.com/viewtopic.php?id=318 and https://github.com/jynnantonix/lolcode/blob/master/BNFGrammar.txt
 (def lolcmis-grammar "
   (* Program structure *)
-  Program               = <SkipLine*> Header StatementList <'KTHXBYE'> <SkipLine*>
-  Header                = <'HAI'> <EndOfStatement> |
-                          <'HAI'> <Whitespace> FloatLiteral <EndOfStatement>
-  StatementList         = Statement*
+  Program               = Header StatementList Footer
+  Header                = <SkipLine*> <OptionalWhitespace> <'HAI'> (<EndOfStatement> | <Whitespace> FloatLiteral <EndOfStatement>)
+  Footer                = <OptionalWhitespace> <'KTHXBYE'> <SkipLine*>
+  StatementList         = (<SkipLine> | Statement)*
 
   (* Statements *)
   Statement             = <OptionalWhitespace>
-                          (<SkipLine> |
-                           ImportStatement |
+                          (ImportStatement |
                            OutputStatement |
                            InputStatement |
                            VariableDeclaration |
                            Assignment |
                            Conditional)
                           <EndOfStatement>
-  SkipLine              = Comment |
-                          EndOfStatement
+  SkipLine              = BlankLine |
+                          Comment
   Comment               = SingleLineComment | MultiLineComment
-  SingleLineComment     = <'BTW'> (Whitespace OptionalNonWhitespace)?
-  MultiLineComment      = <'OBTW'> (Whitespace | NewLine) (Whitespace | NewLine | NonWhitespaceChar)* <'TLDR'>
+  SingleLineComment     = <'BTW'> (Whitespace NotNewLine*)?
+  MultiLineComment      = <'OBTW'> (Whitespace | NewLine) ((NotNewLine | NewLine)* (Whitespace | NewLine))? <'TLDR'>
   ImportStatement       = <'CAN HAZ'> <Whitespace> Identifier <'?'>
   OutputStatement       = <'VISIBLE'> <Whitespace> (Identifier | Literal)
   InputStatement        = <'GIMMEH'> <Whitespace> Identifier
@@ -63,13 +62,12 @@
 
   (* Almost-terminals *)
   EndOfStatement        = OptionalWhitespace (NewLine | ',')
+  BlankLine             = OptionalWhitespace (NewLine | ',')
   Identifier            = !ReservedWord #'[_\\p{Alpha}]\\w*'
 
   (* Terminals *)
   NewLine               = '\\n' | '\\r' | '\\r\\n' | '\\u0085' | '\\u2028' | '\\u2029' | '\\u000B'
-  NonWhitespaceChar     = #'.'
-  NonWhitespace         = NonWhitespaceChar+
-  OptionalNonWhitespace = NonWhitespaceChar*
+  NotNewLine            = #'.'
   WhitespaceChar        = ' ' | '\\t'
   Whitespace            = WhitespaceChar+
   OptionalWhitespace    = WhitespaceChar*

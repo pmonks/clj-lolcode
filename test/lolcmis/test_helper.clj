@@ -38,6 +38,6 @@
           number-of-asts (number-of-asts source rule)]
 
       (if (and print-failure (> number-of-asts 1))
-        (println "Multiple ASTs!"))
+        (println (str "Multiple ASTs (" number-of-asts ")!")))
       (and parsed (= number-of-asts 1))
     )))
