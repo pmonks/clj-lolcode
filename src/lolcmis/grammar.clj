@@ -71,17 +71,17 @@
   AndExpression            = <'BOTH OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
   OrExpression             = <'EITHER OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
   MathematicalExpression   = AdditionExpression |
-                             DifferenceExpression |
+                             SubtractionExpression |
                              MultiplicationExpression |
                              DivisionExpression |
-                             ModuloExpression |
+                             ModulusExpression |
                              MaxExpression |
                              MinExpression
   AdditionExpression       = <'SUM OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  DifferenceExpression     = <'DIFF OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
+  SubtractionExpression    = <'DIFF OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
   MultiplicationExpression = <'PRODUKT OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
   DivisionExpression       = <'QUOSHUNT OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  ModuloExpression         = <'MOD OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
+  ModulusExpression        = <'MOD OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
   MaxExpression            = <'BIGGR OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
   MinExpression            = <'SMALLR OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
 

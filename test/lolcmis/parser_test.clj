@@ -293,7 +293,51 @@ TLDR" :MultiLineComment) => true
   (can-parse? "SUM OF _VAR AN OTHER_VAR" :AdditionExpression) => true
 )
 
-(fact "Max expressions can be parsed."
+(facts "Subtraction expressions can be parsed."
+  (can-parse? "" :SubtractionExpression) >= false
+  (can-parse? " " :SubtractionExpression) >= false
+  (can-parse? "DIFF" :SubtractionExpression) => false
+  (can-parse? "DIFF OF" :SubtractionExpression) => false
+  (can-parse? "DIFF OF VAR" :SubtractionExpression) => false
+  (can-parse? "DIFF OF VAR AN" :SubtractionExpression) => false
+  (can-parse? "DIFF OF VAR AN 1" :SubtractionExpression) => true
+  (can-parse? "DIFF OF _VAR AN OTHER_VAR" :SubtractionExpression) => true
+)
+
+(facts "Multiplication expressions can be parsed."
+  (can-parse? "" :MultiplicationExpression) >= false
+  (can-parse? " " :MultiplicationExpression) >= false
+  (can-parse? "PRODUKT" :MultiplicationExpression) => false
+  (can-parse? "PRODUKT OF" :MultiplicationExpression) => false
+  (can-parse? "PRODUKT OF VAR" :MultiplicationExpression) => false
+  (can-parse? "PRODUKT OF VAR AN" :MultiplicationExpression) => false
+  (can-parse? "PRODUKT OF VAR AN 1" :MultiplicationExpression) => true
+  (can-parse? "PRODUKT OF _VAR AN OTHER_VAR" :MultiplicationExpression) => true
+)
+
+(facts "Division expressions can be parsed."
+  (can-parse? "" :DivisionExpression) >= false
+  (can-parse? " " :DivisionExpression) >= false
+  (can-parse? "QUOSHUNT" :DivisionExpression) => false
+  (can-parse? "QUOSHUNT OF" :DivisionExpression) => false
+  (can-parse? "QUOSHUNT OF VAR" :DivisionExpression) => false
+  (can-parse? "QUOSHUNT OF VAR AN" :DivisionExpression) => false
+  (can-parse? "QUOSHUNT OF VAR AN 1" :DivisionExpression) => true
+  (can-parse? "QUOSHUNT OF _VAR AN OTHER_VAR" :DivisionExpression) => true
+)
+
+(facts "Modulus expressions can be parsed."
+  (can-parse? "" :ModulusExpression) >= false
+  (can-parse? " " :ModulusExpression) >= false
+  (can-parse? "MOD" :ModulusExpression) => false
+  (can-parse? "MOD OF" :ModulusExpression) => false
+  (can-parse? "MOD OF VAR" :ModulusExpression) => false
+  (can-parse? "MOD OF VAR AN" :ModulusExpression) => false
+  (can-parse? "MOD OF VAR AN 1" :ModulusExpression) => true
+  (can-parse? "MOD OF _VAR AN OTHER_VAR" :ModulusExpression) => true
+)
+
+(facts "Max expressions can be parsed."
   (can-parse? "" :MaxExpression) >= false
   (can-parse? " " :MaxExpression) >= false
   (can-parse? "BIGGR" :MaxExpression) >= false
@@ -304,7 +348,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "BIGGR OF VAR AN OTHER_VAR" :MaxExpression) >= true
 )
 
-(fact "Min expressions can be parsed."
+(facts "Min expressions can be parsed."
   (can-parse? "" :MinExpression) >= false
   (can-parse? " " :MinExpression) >= false
   (can-parse? "SMALLR" :MinExpression) >= false
