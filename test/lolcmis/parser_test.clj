@@ -97,15 +97,15 @@ an explicit newline\"" :StringLiteral) => true
   (can-parse? " " :Identifier) => false
   (can-parse? "1" :Identifier) => false
   (can-parse? "\"" :Identifier) => false
-  (can-parse? "_" :Identifier) => true
+  (can-parse? "_" :Identifier) => false
   (can-parse? "a" :Identifier) => true
   (can-parse? "abcd" :Identifier) => true
   (can-parse? " abcd" :Identifier) => false
   (can-parse? "abcd " :Identifier) => false
   (can-parse? " abcd " :Identifier) => false
-  (can-parse? "_abcd" :Identifier) => true
+  (can-parse? "_abcd" :Identifier) => false
   (can-parse? "ABCD123" :Identifier) => true
-  (can-parse? "_ABCD" :Identifier) => true
+  (can-parse? "_ABCD" :Identifier) => false
   (can-parse? "123ABCD" :Identifier) => false
   (can-parse? "ABCD\"" :Identifier) => false
   (can-parse? "ABCD+_@#$-9" :Identifier) => false
@@ -196,7 +196,6 @@ TLDR" :MultiLineComment) => true
   (can-parse? "GIMMEH NOOB" :InputStatement) => false    ; Reserved word
   (can-parse? "GIMMEH ABCD" :InputStatement) => true
   (can-parse? "GIMMEH MY_VAR" :InputStatement) => true
-  (can-parse? "GIMMEH _MY_VAR" :InputStatement) => true
 )
 
 (facts "Variable declarations can be parsed."
@@ -210,7 +209,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "I HAS A PIE ITZ 3" :VariableDeclaration) => true
   (can-parse? "I HAS A PIE ITZ 3" :VariableDeclaration) => true
   (can-parse? "I HAS A ABCD ITZ A YARN" :VariableDeclaration) => true
-  (can-parse? "I HAS A _ABCD ITZ EFGH" :VariableDeclaration) => true
+  (can-parse? "I HAS A ABCD ITZ EFGH" :VariableDeclaration) => true
   (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A INVALID" :VariableDeclaration) => false
   (can-parse? "I HAS A ABCD ITZ EFGH IS NOW A NOOB" :VariableDeclaration) => true
 )
@@ -234,7 +233,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? " " :Assignment) => false
   (can-parse? "ABCD R" :Assignment) => false
   (can-parse? "ABCD R 1" :Assignment) => true
-  (can-parse? "_EFGHI R NOOB" :Assignment) => true
+  (can-parse? "EFGHI R NOOB" :Assignment) => true
   (can-parse? "ZZ167 R WIN" :Assignment) => true
   (can-parse? "ZZ167 R LOSE" :Assignment) => true
   (can-parse? "KITTEH R \"CUTE\"" :Assignment) => true
@@ -250,8 +249,8 @@ TLDR" :MultiLineComment) => true
   (can-parse? "BOTH SAEM" :EqualsExpression) => false
   (can-parse? "BOTH SAEM VAR" :EqualsExpression) => false
   (can-parse? "BOTH SAEM VAR AN 1" :EqualsExpression) => true
-  (can-parse? "BOTH SAEM _VAR AN \"KITTEHZ!!\"" :EqualsExpression) => true
-  (can-parse? "BOTH SAEM _VAR AN OTHER_VAR" :EqualsExpression) => true
+  (can-parse? "BOTH SAEM MY_VAR AN \"KITTEHZ!!\"" :EqualsExpression) => true
+  (can-parse? "BOTH SAEM MY_VAR AN OTHER_VAR" :EqualsExpression) => true
 )
 
 (facts "Not equals expressions can be parsed."
@@ -260,8 +259,8 @@ TLDR" :MultiLineComment) => true
   (can-parse? "DIFFRINT" :NotEqualsExpression) => false
   (can-parse? "DIFFRINT VAR" :NotEqualsExpression) => false
   (can-parse? "DIFFRINT VAR AN 1" :NotEqualsExpression) => true
-  (can-parse? "DIFFRINT _VAR AN \"KITTEHZ!!\"" :NotEqualsExpression) => true
-  (can-parse? "DIFFRINT _VAR AN OTHER_VAR" :NotEqualsExpression) => true
+  (can-parse? "DIFFRINT MY_VAR AN \"KITTEHZ!!\"" :NotEqualsExpression) => true
+  (can-parse? "DIFFRINT MY_VAR AN OTHER_VAR" :NotEqualsExpression) => true
 )
 
 (facts "And expressions can be parsed."
@@ -270,7 +269,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "BOTH" :AndExpression) => false
   (can-parse? "BOTH OF VAR" :AndExpression) => false
   (can-parse? "BOTH OF WIN AN WIN" :AndExpression) => true
-  (can-parse? "BOTH OF _VAR AN OTHER_VAR" :AndExpression) => true
+  (can-parse? "BOTH OF VAR AN OTHER_VAR" :AndExpression) => true
 )
 
 (facts "Or expressions can be parsed."
@@ -279,7 +278,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "EITHER" :OrExpression) => false
   (can-parse? "EITHER OF VAR" :OrExpression) => false
   (can-parse? "EITHER OF VAR AN 1" :OrExpression) => true
-  (can-parse? "EITHER OF _VAR AN OTHER_VAR" :OrExpression) => true
+  (can-parse? "EITHER OF VAR AN OTHER_VAR" :OrExpression) => true
 )
 
 (facts "Addition expressions can be parsed."
@@ -290,7 +289,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "SUM OF VAR" :AdditionExpression) => false
   (can-parse? "SUM OF VAR AN" :AdditionExpression) => false
   (can-parse? "SUM OF VAR AN 1" :AdditionExpression) => true
-  (can-parse? "SUM OF _VAR AN OTHER_VAR" :AdditionExpression) => true
+  (can-parse? "SUM OF VAR AN OTHER_VAR" :AdditionExpression) => true
 )
 
 (facts "Subtraction expressions can be parsed."
@@ -301,7 +300,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "DIFF OF VAR" :SubtractionExpression) => false
   (can-parse? "DIFF OF VAR AN" :SubtractionExpression) => false
   (can-parse? "DIFF OF VAR AN 1" :SubtractionExpression) => true
-  (can-parse? "DIFF OF _VAR AN OTHER_VAR" :SubtractionExpression) => true
+  (can-parse? "DIFF OF VAR AN OTHER_VAR" :SubtractionExpression) => true
 )
 
 (facts "Multiplication expressions can be parsed."
@@ -312,7 +311,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "PRODUKT OF VAR" :MultiplicationExpression) => false
   (can-parse? "PRODUKT OF VAR AN" :MultiplicationExpression) => false
   (can-parse? "PRODUKT OF VAR AN 1" :MultiplicationExpression) => true
-  (can-parse? "PRODUKT OF _VAR AN OTHER_VAR" :MultiplicationExpression) => true
+  (can-parse? "PRODUKT OF VAR AN OTHER_VAR" :MultiplicationExpression) => true
 )
 
 (facts "Division expressions can be parsed."
@@ -323,7 +322,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "QUOSHUNT OF VAR" :DivisionExpression) => false
   (can-parse? "QUOSHUNT OF VAR AN" :DivisionExpression) => false
   (can-parse? "QUOSHUNT OF VAR AN 1" :DivisionExpression) => true
-  (can-parse? "QUOSHUNT OF _VAR AN OTHER_VAR" :DivisionExpression) => true
+  (can-parse? "QUOSHUNT OF VAR AN OTHER_VAR" :DivisionExpression) => true
 )
 
 (facts "Modulus expressions can be parsed."
@@ -334,7 +333,7 @@ TLDR" :MultiLineComment) => true
   (can-parse? "MOD OF VAR" :ModulusExpression) => false
   (can-parse? "MOD OF VAR AN" :ModulusExpression) => false
   (can-parse? "MOD OF VAR AN 1" :ModulusExpression) => true
-  (can-parse? "MOD OF _VAR AN OTHER_VAR" :ModulusExpression) => true
+  (can-parse? "MOD OF VAR AN OTHER_VAR" :ModulusExpression) => true
 )
 
 (facts "Max expressions can be parsed."
@@ -379,11 +378,21 @@ TLDR" :MultiLineComment) => true
   (can-parse? "BOTH SAEM VAR1 AN VAR2\nO RLY?\nYA RLY\nNO" :Conditional) => false
   (can-parse? "BOTH SAEM VAR AN 1\nO RLY?\nYA RLY\nNOWAI" :Conditional) => false
   (can-parse? "BOTH SAEM VAR AN \"KITTEHZ!!1\"\nO RLY?\nYA RLY\nWAI" :Conditional) => false
-  (can-parse? "BOTH SAEM _VAR AN 3.14156,O RLY?,YA RLY,NO WAI" :Conditional) => false
-  (can-parse? "BOTH SAEM _VAR AN _VAR,O RLY?,NO WAI" :Conditional) => false
-  (can-parse? "BOTH SAEM _VAR AN _VAR,O RLY?,NO WAI,OIC" :Conditional) => false
-  (can-parse? "BOTH SAEM _VAR AN _VAR,O RLY?,NO WAI,OIC" :Conditional) => false
-  (can-parse? "BOTH SAEM _VAR AN _VAR\rO RLY?\rYA RLY\nNO WAI\nOIC" :Conditional) => true
+  (can-parse? "BOTH SAEM VAR AN 3.14156,O RLY?,YA RLY,NO WAI" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR1 AN VAR2,O RLY?,NO WAI" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR1 AN VAR2,O RLY?,NO WAI,OIC" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR1 AN VAR2,O RLY?,NO WAI,OIC" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR1 AN VAR2\rO RLY?\rYA RLY\nNO WAI\nOIC" :Conditional) => true
+  (can-parse? "BOTH SAEM VAR1 AN VAR2
+    O RLY?
+YA RLY
+NO WAI
+OIC" :Conditional) => true
+)
+
+(facts "If-elseif-else conditionals can be parsed."
+  (can-parse? "BOTH SAEM VAR1 AN VAR2\nO RLY?\nMEBBE\nYA RLY\nNO" :Conditional) => false
+  (can-parse? "BOTH SAEM VAR1 AN VAR2\rO RLY?\rYA RLY\nNO WAI\nOIC" :Conditional) => true
   (can-parse? "BOTH SAEM VAR1 AN VAR2
     O RLY?
 YA RLY
@@ -392,3 +401,15 @@ OIC" :Conditional) => true
 )
 
 
+
+
+
+(facts "Misc"
+  (can-parse? "
+              HAI
+              KTHXBYE
+             ")
+  =>
+             true
+
+)

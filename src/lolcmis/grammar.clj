@@ -21,7 +21,7 @@
   Program                  = Header StatementList Footer
   Header                   = <Skip*> <OptionalWhitespace> <'HAI'> (<EndOfStatement> | <Whitespace> FloatLiteral <EndOfStatement>)
   StatementList            = (<Skip> | Statement)*
-  Footer                   = <OptionalWhitespace> <'KTHXBYE'> <Skip*>
+  Footer                   = <OptionalWhitespace> <'KTHXBYE'> <(Skip | OptionalWhitespace)*>
 
   (* Statements *)
   Skip                     = BlankLine |
@@ -44,7 +44,7 @@
   VariableDeclaration      = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ'> <Whitespace> Expression | <'ITZ A'> <Whitespace> Type))?
   Assignment               = Identifier <Whitespace> <'R'> <Whitespace> Expression
   Conditional              = IfClause <Skip*> ElseIfClause* <Skip*> ElseClause? <Skip*> <OptionalWhitespace> <'OIC'>
-  IfClause                 = BooleanExpression <EndOfStatement> <Skip*> <OptionalWhitespace> <'O RLY?'> <EndOfStatement> <Skip*> <OptionalWhitespace> <'YA RLY'> <EndOfStatement> StatementList
+  IfClause                 = Expression <EndOfStatement> <Skip*> <OptionalWhitespace> <'O RLY?'> <EndOfStatement> <Skip*> <OptionalWhitespace> <'YA RLY'> <EndOfStatement> StatementList
   ElseIfClause             = <OptionalWhitespace> <'MEBBE'> (<Whitespace> | <NewLine>) BooleanExpression <EndOfStatement> StatementList
   ElseClause               = <OptionalWhitespace> <'NO WAI'> <EndOfStatement> StatementList
 
@@ -88,7 +88,7 @@
   (* Almost-terminals *)
   EndOfStatement           = OptionalWhitespace (NewLine | ',')
   BlankLine                = OptionalWhitespace (NewLine | ',')
-  Identifier               = !ReservedWord #'[_\\p{Alpha}]\\w*'
+  Identifier               = !ReservedWord #'[\\p{Alpha}]\\w*'
 
   (* Terminals *)
   NewLine                  = '\\n' | '\\r' | '\\r\\n' | '\\u0085' | '\\u2028' | '\\u2029' | '\\u000B'
