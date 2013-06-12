@@ -18,13 +18,13 @@
 ; * https://github.com/jynnantonix/lolcode/blob/master/BNFGrammar.txt
 (def lolcmis-grammar "
   (* Program structure *)
-  Program                  = Header StatementList Footer
+  <Program>                = Header StatementList <Footer>
   Header                   = <Skip*> <OptionalWhitespace> <'HAI'> (<EndOfStatement> | <Whitespace> FloatLiteral <EndOfStatement>)
-  StatementList            = (<Skip> | Statement)*
+  <StatementList>          = (<Skip> | Statement)*
   Footer                   = <OptionalWhitespace> <'KTHXBYE'> <(Skip | OptionalWhitespace)*>
 
   (* Statements *)
-  Skip                     = BlankLine |
+  <Skip>                   = BlankLine |
                              Comment EndOfStatement?
   Statement                = <OptionalWhitespace>
                              (ImportStatement |

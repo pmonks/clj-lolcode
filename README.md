@@ -28,7 +28,7 @@ Checkout the source from [GitHub](https://github.com/pmonks/lolcmis).
 
 [Bug Tracker](https://github.com/pmonks/lolcmis/issues)
 
-[Continuous Integration](https://travis-ci.org/pmonks/lolcmis)
+[Continuous Integration](https://travis-ci.org/pmonks/lolcmis) ![Build Status](https://api.travis-ci.org/pmonks/lolcmis.png)
 
 
 ## License

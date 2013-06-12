@@ -22,15 +22,22 @@
   [& args]
   (pp/pprint args))
 
+(defn- program
+  [& args]
+  (list 'do args))
 
 (defn- header
   [& args]
-  '(do (require '[lolcmis.runtime :as rt]) (rt/initialise)))
+  (if (= 0 (count args))
+    [:Header 1.2]
+    [:Header (first args)]))
 
-; The map of tokens to functions for the interpreter.
-(def ^:private interpreter-function-map
+; Functions for cleaning up the AST.
+(def ^:private transform-function-map
   {
-    :Header              print-ast
+    :Header              header
+    :Statement           identity
+    :Literal             identity
     :StringLiteral       str
     :StringCharacter     str
     :EscapedDoubleQuote  str
@@ -40,15 +47,19 @@
     :FalseLiteral        #(identity false)
     :BooleanLiteral      identity
     :VoidLiteral         #(identity nil)
-    :OutputStatement     output-statement
-    :InputStatement      input-statement
-    :VariableDeclaration variable-declaration
     :Expression          identity
-    :CastExpression      cast-expression
   })
+
+(defn- translate-ast-to-clojure
+  [ast]
+  ; Do nothing (yet)
+  )
 
 (defn translate
   "Translates a LOLCMIS program (or fragment, if a rule is provided) into a series of Clojure forms."
   ([source]      (translate source :Program))
-  ([source rule] (insta/transform interpreter-function-map (lp/parser source :start rule))))
+  ([source rule] ()
+    (let [clean-ast (insta/transform transform-function-map (lp/parser source :start rule))]
+      (print-ast clean-ast)   ; ####TEST!!!!
+      (translate-ast-to-clojure clean-ast))))
 

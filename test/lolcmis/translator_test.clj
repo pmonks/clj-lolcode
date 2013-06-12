@@ -13,6 +13,7 @@
         lolcmis.test-helper)
   (:require [instaparse.core :as insta]))
 
+(comment
 (println "---- STRING LITERAL TRANSLATOR TESTS ----")
 
 (facts
@@ -22,4 +23,23 @@
              ")
   =>
              '(do (require '[lolcmis.runtime :as rt]) (rt/initialise))
+  (translate "
+              HAI
+              CAN HAZ STDIO?
+              VISIBLE \"HAI WORLD!\"
+              KTHXBYE
+             ")
+  =>
+             '(do (require '[lolcmis.runtime :as rt]) (rt/initialise))   ;####TODO!!!
+  (translate "
+              HAI
+              CAN HAZ STDIO?
+              I HAS A VAR ITZ 1
+              VISIBLE \"VAR IZ \"
+              VISIBLE VAR
+              KTHXBYE
+             ")
+  =>
+             '(do (require '[lolcmis.runtime :as rt]) (rt/initialise))    ;####TODO!!!!
+)
 )

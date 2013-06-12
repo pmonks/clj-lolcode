@@ -399,17 +399,3 @@ YA RLY
 NO WAI
 OIC" :Conditional) => true
 )
-
-
-
-
-
-(facts "Misc"
-  (can-parse? "
-              HAI
-              KTHXBYE
-             ")
-  =>
-             true
-
-)
