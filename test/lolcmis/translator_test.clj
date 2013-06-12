@@ -13,7 +13,6 @@
         lolcmis.test-helper)
   (:require [instaparse.core :as insta]))
 
-(comment
 (println "---- STRING LITERAL TRANSLATOR TESTS ----")
 
 (facts
@@ -41,5 +40,4 @@
              ")
   =>
              '(do (require '[lolcmis.runtime :as rt]) (rt/initialise))    ;####TODO!!!!
-)
 )
