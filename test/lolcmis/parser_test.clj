@@ -13,7 +13,7 @@
         lolcmis.test-helper)
   (:require [instaparse.core :as insta]))
 
-(println "---- STRING LITERAL BASED PARSER TESTS ----")
+(println "---- STRING LITERAL PARSER TESTS ----")
 
 (facts "String literals can be parsed."
   (can-parse? "" :StringLiteral) => false
@@ -115,6 +115,7 @@ an explicit newline\"" :StringLiteral) => true
   (can-parse? "" :SingleLineComment) => false
   (can-parse? " " :SingleLineComment) => false
   (can-parse? "BTW" :SingleLineComment) => true
+  (can-parse? "BTW," :SingleLineComment) => false
   (can-parse? "BTWabcd" :SingleLineComment) => false
   (can-parse? "BTWabcd\n" :SingleLineComment) => false
   (can-parse? "BTW " :SingleLineComment) => true
@@ -129,29 +130,36 @@ an explicit newline\"" :StringLiteral) => true
   (can-parse? "" :MultiLineComment) => false
   (can-parse? " " :MultiLineComment) => false
   (can-parse? "OBTW" :MultiLineComment) => false
+  (can-parse? "TLDR" :MultiLineComment) => false
+  (can-parse? "OBTWTLDR" :MultiLineComment) => false
   (can-parse? "OBTW TLDR" :MultiLineComment) => true
-  (can-parse? "OBTW TLDR" :MultiLineComment) => true
+  (can-parse? "OBTW TLDR TLDR" :MultiLineComment) => false
+  (can-parse? "OBTW tldr TLDR" :MultiLineComment) => true
   (can-parse? "OBTW\nTLDR" :MultiLineComment) => true
-  (can-parse? "OBTW \nTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW \rTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW \r\n TLDR" :MultiLineComment) => true
   (can-parse? "OBTW
 TLDR" :MultiLineComment) => true
   (can-parse? "OBTW Here is a multi-line comment on a single line TLDR" :MultiLineComment) => true
+  (can-parse? "OBTW\nHere is a multi-line comment on a separate line TLDR" :MultiLineComment) => true
+  (can-parse? "OBTW\nHere is a multi-line comment on a separate line\nTLDR" :MultiLineComment) => true
   (can-parse? "OBTW\nHere is a multi-line comment\rTLDR" :MultiLineComment) => true
-  (can-parse? "OBTW\n Here \nis \na\n multi-line\n comment\n\r\n\r\r\nTLDR" :MultiLineComment) => true
+  (can-parse? "OBTW\nHere is a multi-line comment\n    TLDR" :MultiLineComment) => true
+  (can-parse? "OBTW\n Here \nis \na\n multi-line\n comment\n\r\n\r\r\n\t\t\t\t\t\t\tTLDR" :MultiLineComment) => true
   (can-parse? "OBTW\n abcd 121431 @%&()-=+~`/,.<>';:\\[]{}_ 208941234 \" 2134097\rTLDR" :MultiLineComment) => true
   (can-parse? "OBTW
 VISIBLE
   GIMMEH
     I HAS A
-ITZ
-YARN
-NUMBR
-NUMBAR
-TROOF
-NOOB
-WIN
-LOSE
-TLDR" :MultiLineComment) => true
+\tITZ
+\t\tYARN
+\t\t\tNUMBR
+\t\t\t\tNUMBAR
+\t\t\t\t\tTROOF
+\t\t\t\t\t\tNOOB
+\t\t\t\t\t\t\tWIN
+\t\t\t\t\t\t\t\tLOSE
+\t\t\t\t\t\t\t\t\t TLDR" :MultiLineComment) => true
 )
 
 (facts "Import statements can be parsed."
@@ -390,7 +398,7 @@ NO WAI
 OIC" :Conditional) => true
 )
 
-(facts "If-elseif-else conditionals can be parsed."
+(facts "If-elseif[-elseif]-else conditionals can be parsed."
   (can-parse? "BOTH SAEM VAR1 AN VAR2\nO RLY?\nMEBBE\nYA RLY\nNO" :Conditional) => false
   (can-parse? "BOTH SAEM VAR1 AN VAR2\rO RLY?\rYA RLY\nNO WAI\nOIC" :Conditional) => true
   (can-parse? "BOTH SAEM VAR1 AN VAR2
@@ -398,4 +406,27 @@ OIC" :Conditional) => true
 YA RLY
 NO WAI
 OIC" :Conditional) => true
+  (can-parse? "BOTH SAEM VAR AN 1
+               O RLY?
+                 YA RLY
+                 MEBBE BOTH SAEM VAR AN 2
+                 NO WAI
+               OIC" :Conditional) => true
+  (can-parse? "BOTH SAEM VAR AN 1
+               O RLY?
+                 YA RLY
+                 MEBBE BOTH SAEM VAR AN 2
+                 MEBBE BOTH SAEM VAR AN 3
+                 NO WAI
+               OIC" :Conditional) => true
+  (can-parse? "BOTH SAEM VAR AN 1
+               O RLY?
+                 YA RLY
+                 MEBBE BOTH SAEM VAR AN 2
+                 MEBBE BOTH SAEM VAR AN 3
+                 MEBBE BOTH SAEM VAR AN 4
+                 MEBBE BOTH SAEM VAR AN 5
+                 MEBBE BOTH SAEM VAR AN 6
+                 NO WAI
+               OIC" :Conditional) => true
 )

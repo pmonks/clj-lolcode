@@ -15,13 +15,13 @@
 
 (defn print-ast
   ([source]      (print-ast source :Program))
-  ([source rule] (pprint (parses source rule))))
+  ([source rule] (pprint (raw-parses source rule))))
 
 (defn can-parse?
   ([source]                    (can-parse? source :Program))
   ([source rule]               (can-parse? source rule false))
   ([source rule print-failure]
-    (let [asts   (parses source rule)
+    (let [asts   (raw-parses source rule)
           result (not (insta/failure? asts))]
       (if (and print-failure (not result))
         (do

@@ -18,16 +18,15 @@
 ; * https://github.com/jynnantonix/lolcode/blob/master/BNFGrammar.txt
 (def lolcmis-grammar "
   (* Program structure *)
-  <Program>                = Header ImportStatementList StatementList <Footer>
-  Header                   = <Skip*> <OptionalWhitespace> <'HAI'> (<EndOfStatement> | <Whitespace> FloatLiteral <EndOfStatement>)
-  ImportStatementList      = (<Skip> | (<OptionalWhitespace> ImportStatement <EndOfStatement>))*
-  StatementList            = (<Skip> | Statement)*
-  Footer                   = <OptionalWhitespace> <'KTHXBYE'> <(Skip | OptionalWhitespace)*>
+  <Program>                = Skip* Header ImportStatementList StatementList <Footer> (Skip | <OptionalWhitespace>)*
+  Header                   = <OptionalWhitespace 'HAI'> (<EndOfStatement> | <Whitespace> FloatLiteral <EndOfStatement>)
+  ImportStatementList      = (Skip | (<OptionalWhitespace> ImportStatement <EndOfStatement>))*
+  StatementList            = (Skip | Statement)*
+  Footer                   = OptionalWhitespace 'KTHXBYE' EndOfStatement?
 
   (* Statements *)
-  <Skip>                   = BlankLine |
-                             Comment EndOfStatement?
-  Statement                = <OptionalWhitespace>
+  <Skip>                   = <BlankLine> | (<OptionalWhitespace> Comment <EndOfStatement?>)
+  <Statement>              = <OptionalWhitespace>
                              (OutputStatement |
                               InputStatement |
                               VariableDeclaration |
@@ -36,40 +35,41 @@
                               CastExpression)
                              <EndOfStatement>
   Comment                  = SingleLineComment | MultiLineComment
-  SingleLineComment        = <'BTW'> (Whitespace NotNewLine*)?
-  MultiLineComment         = <'OBTW'> (Whitespace | NewLine) ((NotNewLine | NewLine)* (Whitespace | NewLine))? <'TLDR'>
+  <SingleLineComment>      = <'BTW'> (<Whitespace> NotNewLine*)?
+  <MultiLineComment>       = <'OBTW' (Whitespace | NewLine)> (!'TLDR' (NotNewLine | NewLine)*)? <'TLDR'>
+(*  <MultiLineComment>       = <'OBTW'> (Whitespace | NewLine) ((Whitespace | NewLine)* (NotNewLine | NewLine))? <'TLDR'> *)
   ImportStatement          = <'CAN HAZ'> <Whitespace> Identifier <'?'>
   OutputStatement          = <'VISIBLE'> <Whitespace> Expression
   InputStatement           = <'GIMMEH'> <Whitespace> Identifier
-  VariableDeclaration      = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ'> <Whitespace> Expression | <'ITZ A'> <Whitespace> Type))?
-  Assignment               = Identifier <Whitespace> <'R'> <Whitespace> Expression
-  Conditional              = IfClause <Skip*> ElseIfClause* <Skip*> ElseClause? <Skip*> <OptionalWhitespace> <'OIC'>
-  IfClause                 = Expression <EndOfStatement> <Skip*> <OptionalWhitespace> <'O RLY?'> <EndOfStatement> <Skip*> <OptionalWhitespace> <'YA RLY'> <EndOfStatement> StatementList
-  ElseIfClause             = <OptionalWhitespace> <'MEBBE'> (<Whitespace> | <NewLine>) BooleanExpression <EndOfStatement> StatementList
-  ElseClause               = <OptionalWhitespace> <'NO WAI'> <EndOfStatement> StatementList
+  VariableDeclaration      = <'I HAS A'> <Whitespace> Identifier (<Whitespace> (<'ITZ' Whitespace> Expression | <'ITZ A' Whitespace> Type))?
+  Assignment               = Identifier <Whitespace 'R' Whitespace> Expression
+  Conditional              = IfClause <Skip*> ElseIfClause* <Skip*> ElseClause? <Skip* OptionalWhitespace 'OIC'>
+  IfClause                 = Expression <EndOfStatement Skip* OptionalWhitespace 'O RLY?' EndOfStatement Skip* OptionalWhitespace 'YA RLY' EndOfStatement> StatementList
+  ElseIfClause             = <OptionalWhitespace 'MEBBE' (Whitespace | NewLine)> BooleanExpression <EndOfStatement> StatementList
+  ElseClause               = <OptionalWhitespace 'NO WAI' EndOfStatement> StatementList
 
   (* Expressions *)
-  Expression               = Identifier |
+  <Expression>             = Identifier |
                              Literal |
                              CastExpression |
                              BooleanExpression |
                              MathematicalExpression
-  CastExpression           = Identifier <Whitespace> <'IS NOW A'> <Whitespace> Type
-  Literal                  = StringLiteral |
+  CastExpression           = Identifier <Whitespace 'IS NOW A' Whitespace> Type
+  <Literal>                = StringLiteral |
                              IntegerLiteral |
                              FloatLiteral |
                              BooleanLiteral |
                              VoidLiteral
   StringLiteral            = <DoubleQuote> (EscapedDoubleQuote | StringCharacter)* <DoubleQuote>
-  BooleanLiteral           = TrueLiteral | FalseLiteral
-  BooleanExpression        = EqualsExpression |
+  <BooleanLiteral>         = TrueLiteral | FalseLiteral
+  <BooleanExpression>      = EqualsExpression |
                              NotEqualsExpression |
                              AndExpression |
                              OrExpression
-  EqualsExpression         = <'BOTH SAEM'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  NotEqualsExpression      = <'DIFFRINT'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  AndExpression            = <'BOTH OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  OrExpression             = <'EITHER OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
+  EqualsExpression         = <'BOTH SAEM' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  NotEqualsExpression      = <'DIFFRINT' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  AndExpression            = <'BOTH OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  OrExpression             = <'EITHER OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
   MathematicalExpression   = AdditionExpression |
                              SubtractionExpression |
                              MultiplicationExpression |
@@ -77,13 +77,13 @@
                              ModulusExpression |
                              MaxExpression |
                              MinExpression
-  AdditionExpression       = <'SUM OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  SubtractionExpression    = <'DIFF OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  MultiplicationExpression = <'PRODUKT OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  DivisionExpression       = <'QUOSHUNT OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  ModulusExpression        = <'MOD OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  MaxExpression            = <'BIGGR OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
-  MinExpression            = <'SMALLR OF'> <Whitespace> Expression <Whitespace> 'AN' <Whitespace> Expression
+  AdditionExpression       = <'SUM OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  SubtractionExpression    = <'DIFF OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  MultiplicationExpression = <'PRODUKT OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  DivisionExpression       = <'QUOSHUNT OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  ModulusExpression        = <'MOD OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  MaxExpression            = <'BIGGR OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
+  MinExpression            = <'SMALLR OF' Whitespace> Expression <Whitespace 'AN' Whitespace> Expression
 
   (* Almost-terminals *)
   EndOfStatement           = OptionalWhitespace (NewLine | ',')

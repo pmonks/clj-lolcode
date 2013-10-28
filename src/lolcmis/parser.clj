@@ -14,14 +14,62 @@
             [clojure.tools.logging :as log]
             [lolcmis.grammar       :as lg]))
 
-(def parser (insta/parser lg/lolcmis-grammar))
+(def ^:private parser (insta/parser lg/lolcmis-grammar))
 
-(defn parses
-  "Parses a LOLCMIS program (or fragment, if a rule is provided).  May return multiple parse trees."
-  ([source]      (parses source :Program))
+; Logic for cleaning up the AST.
+(defn- header
+  [& args]
+  (if (= 0 (count args))
+    [:Version 1.2]
+    [:Version (first args)]))
+
+(defn- import-statement-list
+  [& args]
+  (if (empty? args)
+    [:Imports nil]
+    (vec (list :Imports (vec args)))))
+
+(defn- statement-list
+  [& args]
+  (if (empty? args)
+    [:Statements nil]
+    (vec (list :Statements (vec args)))))
+
+(defn- ast-comment
+  [& args]
+  [:Comment (clojure.string/join args)])
+
+(def parser-function-map
+  {
+    ; Basic translations
+    :Header              header
+    :ImportStatement     second
+    :ImportStatementList import-statement-list    ;  #(vec (list :Imports (vec %&)))
+    :StatementList       statement-list           ;  #(vec (list :Statements (vec %&)))
+    :StringLiteral       str
+    :StringCharacter     str
+    :EscapedDoubleQuote  str
+    :NotNewLine          str
+    :Comment             ast-comment
+    :IntegerLiteral      #(Long/parseLong %)       ; ####TODO: consider using BigInteger...
+    :FloatLiteral        #(Double/parseDouble %)   ; ####TODO: consider using BigDecimal...
+    :TrueLiteral         #(identity true)
+    :FalseLiteral        #(identity false)
+    :VoidLiteral         #(identity nil)
+  })
+
+; The parsing functions
+(defn clean-parse
+  "Parses a LOLCMIS program (or fragment, if a rule is provided).  Returns a single clean AST."
+  ([source]      (clean-parse source :Program))
+  ([source rule] (vec (insta/transform parser-function-map (parser source :start rule)))))
+
+(defn raw-parses
+  "Parses a LOLCMIS program (or fragment, if a rule is provided).  Returns one or more raw ASTs."
+  ([source]      (raw-parses source :Program))
   ([source rule] (insta/parses parser source :start rule)))
 
 (defn number-of-asts
   "Returns the total number of parse trees for the given program (or fragment, if a rule is provided)."
   ([source]      (number-of-asts source :Program))
-  ([source rule] (count (parses source rule))))
+  ([source rule] (count (raw-parses source rule))))

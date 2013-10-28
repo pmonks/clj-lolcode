@@ -10,45 +10,22 @@
 ; LOLCMIS (LOLCODE + CMIS) translator
 
 (ns lolcmis.translator
-  (:require [instaparse.core       :as insta]
-            [clojure.tools.logging :as log]
+  (:require [clojure.tools.logging :as log]
             [clojure.pprint        :as pp]
             [lolcmis.parser        :as lp]
             [lolcmis.runtime       :as rt]))
 
 ; Translator functions
 (defn- print-ast
-  "Helper function for dumping the AST that's passed in."
+  "Helper function for dumping the AST that's passed in.  Note: wraps the input in a list."
   [& args]
   (pp/pprint args))
 
-(defn- program
-  [& args]
-  (list 'do args))
-
-(defn- header
-  [& args]
-  (if (= 0 (count args))
-    [:Header 1.2]
-    [:Header (first args)]))
-
-; Functions for cleaning up the AST.
-(def ^:private transform-function-map
+(def translator-function-map (merge lp/parser-function-map
   {
-    :Header              header
-    :Statement           identity
-    :Literal             identity
-    :StringLiteral       str
-    :StringCharacter     str
-    :EscapedDoubleQuote  str
-    :IntegerLiteral      #(Long/parseLong %)       ; ####TODO: consider using BigInteger...
-    :FloatLiteral        #(Double/parseDouble %)   ; ####TODO: consider using BigDecimal...
-    :TrueLiteral         #(identity true)
-    :FalseLiteral        #(identity false)
-    :BooleanLiteral      identity
-    :VoidLiteral         #(identity nil)
-    :Expression          identity
-  })
+    ; ####TODO: add translator specific function mappings, including overrides (as needed)
+  }))
+
 
 (defn- translate-ast-to-clojure
   [ast]
@@ -58,8 +35,8 @@
 (defn translate
   "Translates a LOLCMIS program (or fragment, if a rule is provided) into a series of Clojure forms."
   ([source]      (translate source :Program))
-  ([source rule] ()
-    (let [clean-ast (insta/transform transform-function-map (lp/parser source :start rule))]
-      (print-ast clean-ast)   ; ####TEST!!!!
+  ([source rule]
+    (let [clean-ast (lp/clean-parse source rule)]
+      (pp/pprint clean-ast)   ; ####TEST!!!!
       (translate-ast-to-clojure clean-ast))))
 

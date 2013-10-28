@@ -22,14 +22,17 @@
   (alter-var-root #'*read-eval* (constantly false))
 
   (let [[options args banner] (cli args
-                                   ["-a" "--ast"  "Print the AST for the program, instead of interpreting it." :default false :flag true]
-                                   ["-h" "--help" "Show help" :default false :flag true])]
-    (let [ast      (:ast  options)
-          help     (:help options)
+                                   ["-a" "--ast"      "Print the clean AST for the program, instead of interpreting it." :default false :flag true]
+                                   ["-r" "--raw-asts" "Print the raw AST(s) for the program, instead of interpreting it." :default false :flag true]
+                                   ["-h" "--help"     "Show help" :default false :flag true])]
+    (let [ast      (:ast      options)
+          raw-asts (:raw-asts options)
+          help     (:help     options)
           filename (first args)]
       (if (or help (nil? filename))
         (println (str banner "\n Args\t\tDesc\n ----\t\t----\n filename\tThe filename of the LOLCMIS program to interpret.\n"))
         (let [source (slurp filename)]
-          (if ast
-            (map #(do (println "\n\n**** NEXT AST ****") (pprint %) (flush)) (lp/parses source))
-            (li/interpret source)))))))
+          (cond
+            ast      (pprint (lp/clean-parse source))
+            raw-asts (map #(do (println "\n\n**** NEXT AST ****") (pprint %) (flush)) (lp/raw-parses source))
+            :else    (li/interpret source)))))))
