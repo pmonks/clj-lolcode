@@ -15,18 +15,18 @@
             :url "http://creativecommons.org/licenses/by-sa/3.0/"}
   :dependencies [
                   [org.clojure/clojure "1.5.1"]
-                  [org.clojure/tools.cli "0.2.4"]
-                  [org.clojure/tools.trace "0.7.6"]
-                  [org.clojure/tools.logging "0.2.6"]
-                  [instaparse "1.2.6"]
-                  [ch.qos.logback/logback-classic "1.0.13"]
+                  [org.clojure/tools.cli "0.3.3"]
+                  [org.clojure/tools.trace "0.7.8"]
+                  [org.clojure/tools.logging "0.3.1"]
+                  [instaparse "1.4.1"]
+                  [ch.qos.logback/logback-classic "1.1.3"]
                 ]
   :profiles {:dev {:dependencies [
-                                   [midje "1.5.1"]
+                                   [midje "1.7.0"]
                                    [clj-ns-browser "1.3.1"]
                                  ]
                    :plugins [
-                              [lein-midje "3.0.1"]
+                              [lein-midje "3.1.3"]
                             ]}}
   :jvm-opts ^:replace []  ; Stop Leiningen from turning off JVM optimisations - makes it slower to start but ensures code runs as fast as possible
   :main lolcmis.core)
