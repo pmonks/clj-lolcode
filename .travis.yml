@@ -5,3 +5,5 @@ lein: 2.8.1
 jdk:
   - oraclejdk8
   - oraclejdk10
+
+script: lein do check, midje
