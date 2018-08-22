@@ -1,6 +1,7 @@
+sudo: false
 language: clojure
-lein: lein2
-script: lein2 midje
+lein: 2.8.1
+
 jdk:
-  - openjdk7
-  - openjdk6
+  - oraclejdk8
+  - oraclejdk10
