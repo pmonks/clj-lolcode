@@ -1,16 +1,18 @@
-[![Build Status](https://travis-ci.com/pmonks/lolcmis.svg?branch=master)](https://travis-ci.com/pmonks/lolcmis)
-[![Open Issues](https://img.shields.io/github/issues/pmonks/lolcmis.svg)](https://github.com/pmonks/lolcmis/issues)
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/pmonks/lolcmis.svg)](http://isitmaintained.com/project/pmonks/lolcmis "Average time to resolve an issue")
-[![License](https://img.shields.io/github/license/pmonks/lolcmis.svg)](https://github.com/pmonks/lolcmis/blob/master/LICENSE)
-[![Dependencies Status](https://versions.deps.co/pmonks/lolcmis/status.svg)](https://versions.deps.co/pmonks/lolcmis)
+[![Build Status](https://travis-ci.com/pmonks/clj-lolcode.svg?branch=master)](https://travis-ci.com/pmonks/clj-lolcode)
+[![Open Issues](https://img.shields.io/github/issues/pmonks/clj-lolcode.svg)](https://github.com/pmonks/clj-lolcode/issues)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/pmonks/clj-lolcode.svg)](http://isitmaintained.com/project/pmonks/clj-lolcode "Average time to resolve an issue")
+[![License](https://img.shields.io/github/license/pmonks/clj-lolcode.svg)](https://github.com/pmonks/clj-lolcode/blob/master/LICENSE)
+[![Dependencies Status](https://versions.deps.co/pmonks/clj-lolcode/status.svg)](https://versions.deps.co/pmonks/clj-lolcode)
 
 # lolcmis
 
-An interpreter for the LOLCMIS (LOLCODE + CMIS) programming language.  See [the press release](http://blogs.alfresco.com/wp/developer/2013/04/01/alfresco-announces-hipster-compatible-enterprise-content-management-sdk/).
+An interpreter for the [LOLCODE programming language](https://lolcode.org/) implemented in [Clojure](https://clojure.org/).
+
+**CURRENTLY A WIP!**
 
 ## Installation
 
-Checkout the source from [GitHub](https://github.com/pmonks/lolcmis).
+Checkout the source from [GitHub](https://github.com/pmonks/clj-lolcode).
 
 ## Running
 
@@ -25,17 +27,19 @@ Checkout the source from [GitHub](https://github.com/pmonks/lolcmis).
 
     Args       Desc
     ----       ----
-    filename   The filename of the LOLCMIS program to evaluate.
+    filename   The filename of the LOLCODE program to evaluate.
 
 
 ## Developer Information
 
-[GitHub project](https://github.com/pmonks/lolcmis)
+[GitHub project](https://github.com/pmonks/clj-lolcode)
 
-[Bug Tracker](https://github.com/pmonks/lolcmis/issues)
+[Bug Tracker](https://github.com/pmonks/clj-lolcode/issues)
 
 ## License
 
 Copyright © 2013 Peter Monks (pmonks@gmail.com)
 
-Distributed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.
+This work is licensed under a [Creative Commons Attribution-ShareAlike 3.0 United States License](http://creativecommons.org/licenses/by-sa/3.0/us/)
+
+[![CC-BY-SA-3.0-US](https://i.creativecommons.org/l/by-sa/3.0/us/88x31.png)](http://creativecommons.org/licenses/by-sa/3.0/us/)
