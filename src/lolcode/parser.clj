@@ -7,14 +7,12 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-; LOLCMIS (LOLCODE + CMIS) parser
-
-(ns lolcmis.parser
+(ns lolcode.parser
   (:require [instaparse.core       :as insta]
             [clojure.tools.logging :as log]
-            [lolcmis.grammar       :as lg]))
+            [lolcode.grammar       :as lg]))
 
-(def ^:private parser (insta/parser lg/lolcmis-grammar))
+(def ^:private parser (insta/parser lg/lolcode-grammar))
 
 ; Logic for cleaning up the AST.
 (defn- header

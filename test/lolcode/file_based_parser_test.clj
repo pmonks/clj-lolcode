@@ -7,12 +7,12 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-(ns lolcmis.file-based-parser-test
+(ns lolcode.file-based-parser-test
   (:use midje.sweet
         clojure.pprint
-        lolcmis.parser
+        lolcode.parser
         clojure.java.io
-        lolcmis.test-helper)
+        lolcode.test-helper)
   (:require [instaparse.core :as insta]))
 
 (println "---- FILE BASED PARSER TESTS ----")

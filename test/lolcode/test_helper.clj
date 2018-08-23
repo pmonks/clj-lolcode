@@ -7,10 +7,10 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-(ns lolcmis.test-helper
+(ns lolcode.test-helper
   (:use clojure.pprint
         clojure.java.io
-        lolcmis.parser)
+        lolcode.parser)
   (:require [instaparse.core :as insta]))
 
 (defn print-ast

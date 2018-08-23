@@ -7,15 +7,13 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-; LOLCMIS (LOLCODE + CMIS) runtime
-
-(ns lolcmis.runtime
+(ns lolcode.runtime
   (:require [instaparse.core       :as insta]
             [clojure.tools.logging :as log]))
 
 ; Interpreter implementation functions
 (defn get-var
-  "Gets the value of a LOLCMIS variable."
+  "Gets the value of a LOLCODE variable."
   [var-name]
   (let [variable (find-var (symbol "lolprogram" var-name))]
     (if (nil? variable)
@@ -23,14 +21,14 @@
       (var-get variable))))
 
 (defn set-var
-  "Sets the value of a LOLCMIS variable to the specified value."
+  "Sets the value of a LOLCODE variable to the specified value."
   [var-name value]
   (do
     (log/debug (str "Setting lolprogram/" var-name " to " (if (nil? value) "<nil>" value)))
     (intern 'lolprogram (symbol var-name) value)))
 
 (defn initialise
-  "Initialises the LOLCMIS interpreter."
+  "Initialises the LOLCODE interpreter."
   [& args]
   (create-ns 'lolprogram)        ; Create a dedicated namespace for the program itself
   (set-var "IT" nil)             ; Define and initialise special variable "IT"

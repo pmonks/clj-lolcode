@@ -7,21 +7,14 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-; LOLCMIS (LOLCODE + CMIS) interpreter
-
-(ns lolcmis.interpreter
+(ns lolcode.interpreter
   (:require [instaparse.core       :as insta]
             [clojure.tools.logging :as log]
-            [lolcmis.runtime       :as rt]
-            [lolcmis.translator    :as lt]))
+            [lolcode.runtime       :as rt]
+            [lolcode.translator    :as lt]))
 
 ; The interpreter itself
 (defn interpret
-  "Evaluates (interprets) a LOLCMIS program."
+  "Evaluates (interprets) a LOLCODE program."
   [source]
   (eval (lt/translate source)))
-
-
-
-
-

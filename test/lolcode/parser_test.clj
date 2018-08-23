@@ -7,10 +7,10 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-(ns lolcmis.parser-test
+(ns lolcode.parser-test
   (:use midje.sweet
-        lolcmis.parser
-        lolcmis.test-helper)
+        lolcode.parser
+        lolcode.test-helper)
   (:require [instaparse.core :as insta]))
 
 (println "---- STRING LITERAL PARSER TESTS ----")

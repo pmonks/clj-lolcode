@@ -7,13 +7,11 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-; LOLCMIS (LOLCODE + CMIS) translator
-
-(ns lolcmis.translator
+(ns lolcode.translator
   (:require [clojure.tools.logging :as log]
             [clojure.pprint        :as pp]
-            [lolcmis.parser        :as lp]
-            [lolcmis.runtime       :as rt]))
+            [lolcode.parser        :as lp]
+            [lolcode.runtime       :as rt]))
 
 ; Translator functions
 (defn- print-ast
@@ -33,7 +31,7 @@
   )
 
 (defn translate
-  "Translates a LOLCMIS program (or fragment, if a rule is provided) into a series of Clojure forms."
+  "Translates a LOLCODE program (or fragment, if a rule is provided) into a series of Clojure forms."
   ([source]      (translate source :Program))
   ([source rule]
     (let [clean-ast (lp/clean-parse source rule)]

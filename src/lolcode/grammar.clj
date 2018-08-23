@@ -7,16 +7,14 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-; LOLCMIS (LOLCODE + CMIS) grammar
+(ns lolcode.grammar)
 
-(ns lolcmis.grammar)
-
-; LOLCMIS grammar
+; LOLCODE grammar
 ; LOLCODE 1.2 specification available at http://archive.is/HKS3
 ; Some pre-existing LOLCODE grammars are at:
 ; * http://forum.lolcode.com/viewtopic.php?id=318
 ; * https://github.com/jynnantonix/lolcode/blob/master/BNFGrammar.txt
-(def lolcmis-grammar "
+(def lolcode-grammar "
   (* Program structure *)
   <Program>                = Skip* Header ImportStatementList StatementList <Footer> (Skip | <OptionalWhitespace>)*
   Header                   = <OptionalWhitespace 'HAI'> (<EndOfStatement> | <Whitespace> FloatLiteral <EndOfStatement>)

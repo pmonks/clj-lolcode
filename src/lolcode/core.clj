@@ -7,10 +7,10 @@
 ; Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ;
 
-(ns lolcmis.core
+(ns lolcode.core
   (:require [clojure.string      :as s]
-            [lolcmis.parser      :as lp]
-            [lolcmis.interpreter :as li])
+            [lolcode.parser      :as lp]
+            [lolcode.interpreter :as li])
   (:use [clojure.tools.cli :only [cli]]
         [clojure.pprint :only [pprint]])
   (:gen-class))
