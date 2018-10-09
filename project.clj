@@ -15,14 +15,14 @@
             :url "http://creativecommons.org/licenses/by-sa/3.0/"}
   :dependencies [
                   [org.clojure/clojure            "1.9.0"]
-                  [org.clojure/tools.cli          "0.3.7"]
-                  [org.clojure/tools.trace        "0.7.9"]
+                  [org.clojure/tools.cli          "0.4.1"]
+                  [org.clojure/tools.trace        "0.7.10"]
                   [org.clojure/tools.logging      "0.4.1"]
                   [instaparse                     "1.4.9"]
                   [ch.qos.logback/logback-classic "1.2.3"]
                 ]
   :profiles {:dev {:dependencies [
-                                   [midje "1.9.2"]
+                                   [midje "1.9.3"]
                                    [clj-ns-browser "1.3.1"]
                                  ]
                    :plugins [
