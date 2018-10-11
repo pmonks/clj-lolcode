@@ -13,6 +13,8 @@
         lolcode.test-helper)
   (:require [instaparse.core :as insta]))
 
+(println "\n☔️ Running tests on Clojure" (clojure-version) "/ JVM" (System/getProperty "java.version") (str "(" (System/getProperty "java.vm.name") " v" (System/getProperty "java.vm.version") ")"))
+
 (println "---- STRING LITERAL PARSER TESTS ----")
 
 (facts "String literals can be parsed."
