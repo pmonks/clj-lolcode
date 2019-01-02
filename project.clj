@@ -8,25 +8,17 @@
 ;
 
 (defproject lolcmis "0.1.0-SNAPSHOT"
-  :min-lein-version "2.0.0"
   :description "LOLCMIS interpreter"
   :url "https://github.com/pmonks/lolcmis"
   :license {:name "Creative Commons Attribution-ShareAlike 3.0 Unported License."
             :url "http://creativecommons.org/licenses/by-sa/3.0/"}
-  :dependencies [
-                  [org.clojure/clojure            "1.9.0"]
-                  [org.clojure/tools.cli          "0.4.1"]
-                  [org.clojure/tools.trace        "0.7.10"]
-                  [org.clojure/tools.logging      "0.4.1"]
-                  [instaparse                     "1.4.9"]
-                  [ch.qos.logback/logback-classic "1.2.3"]
-                ]
-  :profiles {:dev {:dependencies [
-                                   [midje "1.9.3"]
-                                   [clj-ns-browser "1.3.1"]
-                                 ]
-                   :plugins [
-                              [lein-midje "3.2.1"]
-                            ]}}
-  :jvm-opts ^:replace []  ; Stop Leiningen from turning off JVM optimisations - makes it slower to start but ensures code runs as fast as possible
+  :min-lein-version "2.8.1"
+  :dependencies [[org.clojure/clojure            "1.10.0"]
+                 [org.clojure/tools.cli          "0.4.1"]
+                 [org.clojure/tools.trace        "0.7.10"]
+                 [org.clojure/tools.logging      "0.4.1"]
+                 [instaparse                     "1.4.10"]
+                 [ch.qos.logback/logback-classic "1.2.3"]]
+  :profiles {:dev {:dependencies [[midje "1.9.4"]]
+                   :plugins      [[lein-midje "3.2.1"]]}}
   :main lolcmis.core)
