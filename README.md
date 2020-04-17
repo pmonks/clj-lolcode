@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/pmonks/clj-lolcode.svg)](https://github.com/pmonks/clj-lolcode/blob/master/LICENSE)
 [![Dependencies Status](https://versions.deps.co/pmonks/clj-lolcode/status.svg)](https://versions.deps.co/pmonks/clj-lolcode)
 
-# lolcmis
+# clj-lolcode
 
 An interpreter for the [LOLCODE programming language](https://lolcode.org/) implemented in [Clojure](https://clojure.org/).
 
@@ -40,6 +40,6 @@ Checkout the source from [GitHub](https://github.com/pmonks/clj-lolcode).
 
 Copyright © 2013 Peter Monks (pmonks@gmail.com)
 
-This work is licensed under a [Creative Commons Attribution-ShareAlike 3.0 United States License](http://creativecommons.org/licenses/by-sa/3.0/us/)
+This work is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/).
 
-[![CC-BY-SA-3.0-US](https://i.creativecommons.org/l/by-sa/3.0/us/88x31.png)](http://creativecommons.org/licenses/by-sa/3.0/us/)
+[![CC-BY-SA-4.0-US](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](https://creativecommons.org/licenses/by-sa/4.0/)
