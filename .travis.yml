@@ -1,9 +1,11 @@
 sudo: false
 language: clojure
-lein: 2.8.1
+lein: 2.9.3
 
 jdk:
-  - oraclejdk8
+  - openjdk8
   - openjdk11   # Don't fall for Oracle's trick: https://blog.joda.org/2018/09/do-not-fall-into-oracles-java-11-trap.html
+  - openjdk14
 
-script: lein do version, check, midje
+script:
+  - lein do version, check, midje
