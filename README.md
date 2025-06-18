@@ -1,10 +1,10 @@
+# clj-lolcode
+
 [![Build Status](https://travis-ci.com/pmonks/clj-lolcode.svg?branch=master)](https://travis-ci.com/pmonks/clj-lolcode)
 [![Open Issues](https://img.shields.io/github/issues/pmonks/clj-lolcode.svg)](https://github.com/pmonks/clj-lolcode/issues)
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/pmonks/clj-lolcode.svg)](http://isitmaintained.com/project/pmonks/clj-lolcode "Average time to resolve an issue")
 [![License](https://img.shields.io/github/license/pmonks/clj-lolcode.svg)](https://github.com/pmonks/clj-lolcode/blob/master/LICENSE)
 [![Dependencies Status](https://versions.deps.co/pmonks/clj-lolcode/status.svg)](https://versions.deps.co/pmonks/clj-lolcode)
-
-# clj-lolcode
+![Maintained](https://badges.ws/badge/?label=maintained&value=yes,+at+author's+discretion)
 
 An interpreter for the [LOLCODE programming language](https://lolcode.org/) implemented in [Clojure](https://clojure.org/).
 
