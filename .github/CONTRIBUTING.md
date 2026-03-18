@@ -1,7 +1,9 @@
-# Contributing to the clj-lolcode project
+# Contributing
+
 :+1: First off, thanks for taking the time to contribute! :+1:
 
 # Contributor License Agreement (CLA)
+
 A CLA is a document that specifies how a project is allowed to use your contribution.  We want a CLA that is simple and as clear as possible so that it doesn't impede contributions to the project.
 
 When you make a contribution to this project, you agree:
@@ -11,6 +13,10 @@ When you make a contribution to this project, you agree:
 3. You are capable of granting these rights for the contribution.
 
 By submitting a contribution to the project you agree to the above statements.
+
+## A Note on "AI" Generated Code
+
+Because anyone who contributes "AI" generated code cannot guarantee requirements #1 and #3, such code will not be accepted into this project.
 
 # Contributing Issues
 
